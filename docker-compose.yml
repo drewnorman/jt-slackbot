@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  jt-slackbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: jt-slackbot
+    volumes:
+      - .:/app
+    restart: always
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: false
