@@ -1,0 +1,8 @@
+# IDE settings
+.idea
+
+# Sensitive data
+.env
+
+# Build artifacts
+jt-slackbot
