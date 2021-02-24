@@ -11,7 +11,15 @@ services:
     restart: always
     networks:
       - internal
-
+  jt-slackbot-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: jt-slackbot-test
+    volumes:
+      - .:/app
+    networks:
+      - internal
 networks:
   internal:
     external: false
