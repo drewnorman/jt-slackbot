@@ -1,4 +1,4 @@
-package websocket
+package slack
 
 import (
 	"errors"
@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-type Client struct {
+type WsClient struct {
 	connection *websocket.Conn
 }
 
-func NewClient() *Client {
-	return &Client{}
+func NewWsClient() *WsClient {
+	return &WsClient{}
 }
 
-func (client *Client) Connect(
+func (client *WsClient) Connect(
 	wssUrl string,
 ) error {
 	if wssUrl == "" {
@@ -29,7 +29,7 @@ func (client *Client) Connect(
 	return nil
 }
 
-func (client *Client) Close(
+func (client *WsClient) Close(
 	complete chan struct{},
 	timeout time.Duration,
 ) (bool, error) {
@@ -53,11 +53,11 @@ func (client *Client) Close(
 	return timedOut, nil
 }
 
-func (client *Client) Disconnect() error {
+func (client *WsClient) Disconnect() error {
 	return client.connection.Close()
 }
 
-func (client *Client) Listen(
+func (client *WsClient) Listen(
 	events chan map[string]interface{},
 ) {
 	defer close(events)

@@ -1,4 +1,4 @@
-package http
+package slack
 
 import (
 	"encoding/json"
@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-type Client struct {
+type HttpClient struct {
 	apiUrl     string
 	appToken   string
 	botToken   string
 	httpClient *http.Client
 }
 
-type ClientParameters struct {
+type HttpClientParameters struct {
 	ApiUrl     string
 	AppToken   string
 	BotToken   string
@@ -25,7 +25,7 @@ type ClientParameters struct {
 
 const defaultTimeout = time.Duration(10) * time.Second
 
-func NewClient(params *ClientParameters) (*Client, error) {
+func NewHttpClient(params *HttpClientParameters) (*HttpClient, error) {
 	if params.ApiUrl == "" {
 		return nil, errors.New("missing api url in client parameters")
 	}
@@ -45,16 +45,15 @@ func NewClient(params *ClientParameters) (*Client, error) {
 		}
 	}
 
-	client := &Client{
+	return &HttpClient{
 		apiUrl:     params.ApiUrl,
 		appToken:   params.AppToken,
 		botToken:   params.BotToken,
 		httpClient: httpClient,
-	}
-	return client, nil
+	}, nil
 }
 
-func (client *Client) RequestWssUrl(
+func (client *HttpClient) RequestWssUrl(
 	debugWssReconnects bool,
 ) (string, error) {
 	data, err := client.post(
@@ -75,7 +74,7 @@ func (client *Client) RequestWssUrl(
 	return wssUrl, nil
 }
 
-func (client *Client) JoinChannel(
+func (client *HttpClient) JoinChannel(
 	channelId string,
 ) error {
 	if channelId == "" {
@@ -98,7 +97,7 @@ func (client *Client) JoinChannel(
 	return nil
 }
 
-func (client *Client) PublicChannels() ([]interface{}, error) {
+func (client *HttpClient) PublicChannels() ([]interface{}, error) {
 	data, err := client.get(
 		client.botToken,
 		"conversations.list",
@@ -118,7 +117,7 @@ func (client *Client) PublicChannels() ([]interface{}, error) {
 	return channels, nil
 }
 
-func (client *Client) SendMessageToChannel(
+func (client *HttpClient) SendMessageToChannel(
 	message string,
 	channelId string,
 ) error {
@@ -149,7 +148,7 @@ func (client *Client) SendMessageToChannel(
 	return nil
 }
 
-func (client *Client) post(
+func (client *HttpClient) post(
 	token string,
 	endpoint string,
 	params map[string]string,
@@ -183,7 +182,7 @@ func (client *Client) post(
 	return *decoded, nil
 }
 
-func (client *Client) get(
+func (client *HttpClient) get(
 	token string,
 	endpoint string,
 	params map[string]string,

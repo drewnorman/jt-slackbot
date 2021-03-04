@@ -2,12 +2,13 @@ package main
 
 import (
 	"github.com/drewnorman/jt-slackbot/bot"
+	"github.com/drewnorman/jt-slackbot/configuration"
 	"log"
 	"os"
 )
 
 func main() {
-	config := NewConfiguration()
+	config := configuration.NewConfiguration()
 	err := config.Load()
 	if err != nil {
 		log.Printf("Error loading configuration: %s", err)
@@ -15,11 +16,11 @@ func main() {
 	}
 
 	slackBot, err := bot.New(&bot.Parameters{
-		ApiUrl:             config.apiUrl,
-		AppToken:           config.appToken,
-		BotToken:           config.botToken,
-		MaxConnectAttempts: config.maxConnectAttempts,
-		DebugWssReconnects: config.debugWssReconnects,
+		ApiUrl:             config.ApiUrl,
+		AppToken:           config.AppToken,
+		BotToken:           config.BotToken,
+		MaxConnectAttempts: config.MaxConnectAttempts,
+		DebugWssReconnects: config.DebugWssReconnects,
 	})
 	if err != nil {
 		log.Printf("Error creating bot: %s", err)

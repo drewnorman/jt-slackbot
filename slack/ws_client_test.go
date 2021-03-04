@@ -1,4 +1,4 @@
-package websocket
+package slack
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
@@ -66,7 +66,7 @@ func TestClient_Connect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client := NewClient()
+			client := NewWsClient()
 			err := client.Connect(tt.args.wssUrl)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Connect() error = %v, wantErr %v", err, tt.wantErr)
@@ -117,7 +117,7 @@ func TestClient_Close(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client := NewClient()
+			client := NewWsClient()
 			err := client.Connect(wssUrl)
 			if err != nil {
 				t.Errorf("Close() error = %v, wantErr %v", err, false)
@@ -233,7 +233,7 @@ func TestClient_Listen(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client := NewClient()
+			client := NewWsClient()
 			err := client.Connect(wssUrl)
 			if err != nil {
 				t.Errorf("Close() error = %v, wantErr %v", err, false)

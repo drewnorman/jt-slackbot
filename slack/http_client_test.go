@@ -1,4 +1,4 @@
-package http
+package slack
 
 import (
 	"bytes"
@@ -50,7 +50,7 @@ func defaultFakeHttpClient(
 
 func TestNewClient(t *testing.T) {
 	type args struct {
-		params *ClientParameters
+		params *HttpClientParameters
 	}
 
 	apiUrl := gofakeit.URL()
@@ -60,13 +60,13 @@ func TestNewClient(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *Client
+		want    *HttpClient
 		wantErr bool
 	}{
 		{
 			name: "ReturnsNewClient",
 			args: args{
-				params: &ClientParameters{
+				params: &HttpClientParameters{
 					ApiUrl:   apiUrl,
 					AppToken: appToken,
 					BotToken: botToken,
@@ -77,7 +77,7 @@ func TestNewClient(t *testing.T) {
 		{
 			name: "MissingApiUrl",
 			args: args{
-				params: &ClientParameters{
+				params: &HttpClientParameters{
 					ApiUrl:   "",
 					AppToken: appToken,
 					BotToken: botToken,
@@ -88,7 +88,7 @@ func TestNewClient(t *testing.T) {
 		{
 			name: "MissingAppToken",
 			args: args{
-				params: &ClientParameters{
+				params: &HttpClientParameters{
 					ApiUrl:   apiUrl,
 					AppToken: "",
 					BotToken: botToken,
@@ -99,7 +99,7 @@ func TestNewClient(t *testing.T) {
 		{
 			name: "MissingBotToken",
 			args: args{
-				params: &ClientParameters{
+				params: &HttpClientParameters{
 					ApiUrl:   apiUrl,
 					AppToken: appToken,
 					BotToken: "",
@@ -111,9 +111,9 @@ func TestNewClient(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewClient(tt.args.params)
+			_, err := NewHttpClient(tt.args.params)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("NewClient() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("NewHttpClient() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -159,7 +159,7 @@ func TestClient_RequestWssUrl(t *testing.T) {
 				t.Errorf("RequestWssUrl() error = %v, wantErr %v", err, false)
 				return
 			}
-			client := &Client{
+			client := &HttpClient{
 				httpClient: httpClient,
 			}
 			url, err := client.RequestWssUrl(tt.args.debugWssReconnects)
@@ -213,7 +213,7 @@ func TestClient_JoinChannel(t *testing.T) {
 				t.Errorf("JoinChannel() error = %v, wantErr %v", err, false)
 				return
 			}
-			client := &Client{
+			client := &HttpClient{
 				httpClient: httpClient,
 			}
 			err = client.JoinChannel(tt.args.channelId)
@@ -257,7 +257,7 @@ func TestClient_PublicChannels(t *testing.T) {
 				t.Errorf("JoinChannel() error = %v, wantErr %v", err, false)
 				return
 			}
-			client := &Client{
+			client := &HttpClient{
 				httpClient: httpClient,
 			}
 			channels, err := client.PublicChannels()
@@ -352,7 +352,7 @@ func TestClient_SendMessageToChannel(t *testing.T) {
 				}
 			}
 
-			client := &Client{
+			client := &HttpClient{
 				httpClient: httpClient,
 			}
 			err := client.SendMessageToChannel(tt.args.message, tt.args.channelId)

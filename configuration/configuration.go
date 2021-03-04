@@ -1,4 +1,4 @@
-package main
+package configuration
 
 import (
 	"errors"
@@ -10,11 +10,11 @@ import (
 type EnvLoader func(filenames ...string) (err error)
 
 type Configuration struct {
-	apiUrl             string
-	appToken           string
-	botToken           string
-	maxConnectAttempts int
-	debugWssReconnects bool
+	ApiUrl             string
+	AppToken           string
+	BotToken           string
+	MaxConnectAttempts int
+	DebugWssReconnects bool
 	loadEnvironment    EnvLoader
 }
 
@@ -30,27 +30,27 @@ func (config *Configuration) Load() error {
 		return err
 	}
 
-	config.apiUrl, exists = os.LookupEnv("SLACK_API_URL")
+	config.ApiUrl, exists = os.LookupEnv("SLACK_API_URL")
 	if !exists {
 		return errors.New("missing slack api url")
 	}
 
-	config.appToken, exists = os.LookupEnv("SLACK_APP_TOKEN")
+	config.AppToken, exists = os.LookupEnv("SLACK_APP_TOKEN")
 	if !exists {
 		return errors.New("missing slack app token")
 	}
 
-	config.botToken, exists = os.LookupEnv("SLACK_BOT_TOKEN")
+	config.BotToken, exists = os.LookupEnv("SLACK_BOT_TOKEN")
 	if !exists {
 		return errors.New("missing slack bot token")
 	}
 
 	retryMax, exists := os.LookupEnv("MAX_CONNECT_ATTEMPTS")
 	if !exists {
-		config.maxConnectAttempts = 3
+		config.MaxConnectAttempts = 3
 	} else {
 		var err error
-		config.maxConnectAttempts, err = strconv.Atoi(retryMax)
+		config.MaxConnectAttempts, err = strconv.Atoi(retryMax)
 		if err != nil {
 			return err
 		}
@@ -58,9 +58,9 @@ func (config *Configuration) Load() error {
 
 	debugWssReconnects, exists := os.LookupEnv("DEBUG_WEBSOCKET_RECONNECTS")
 	if !exists {
-		config.debugWssReconnects = false
+		config.DebugWssReconnects = false
 	} else {
-		config.debugWssReconnects = debugWssReconnects == "true"
+		config.DebugWssReconnects = debugWssReconnects == "true"
 	}
 
 	return nil
