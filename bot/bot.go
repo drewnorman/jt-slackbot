@@ -4,8 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/drewnorman/jt-slackbot/event"
-	"github.com/drewnorman/jt-slackbot/http"
-	"github.com/drewnorman/jt-slackbot/websocket"
+	"github.com/drewnorman/jt-slackbot/slack"
 	"os"
 	"os/signal"
 	"time"
@@ -17,8 +16,8 @@ type Bot struct {
 	botToken           string
 	maxConnectAttempts int
 	debugWssReconnects bool
-	httpClient         *http.Client
-	wsClient           *websocket.Client
+	httpClient         *slack.HttpClient
+	wsClient           *slack.WsClient
 	handler            *event.Handler
 	interrupt          chan os.Signal
 }
@@ -59,7 +58,7 @@ func New(params *Parameters) (*Bot, error) {
 		debugWssReconnects: debugWssReconnects,
 	}
 
-	httpClient, err := http.NewClient(&http.ClientParameters{
+	httpClient, err := slack.NewHttpClient(&slack.HttpClientParameters{
 		ApiUrl:   bot.apiUrl,
 		AppToken: bot.appToken,
 		BotToken: bot.botToken,
@@ -94,7 +93,7 @@ func (bot *Bot) AttemptToConnect() error {
 		)
 	}
 
-	bot.wsClient = websocket.NewClient()
+	bot.wsClient = slack.NewWsClient()
 	attemptsLeft = bot.maxConnectAttempts
 	for attemptsLeft > 0 {
 		err := bot.wsClient.Connect(wssUrl)

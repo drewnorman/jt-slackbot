@@ -1,4 +1,4 @@
-package main
+package configuration
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
@@ -126,24 +126,24 @@ func TestLoadConfiguration(t *testing.T) {
 				return
 			}
 
-			if tt.args.environment["SLACK_API_URL"] != "" && config.apiUrl != tt.args.environment["SLACK_API_URL"] {
-				t.Errorf("LoadConfiguration() = %v, want %v", config.apiUrl, tt.args.environment["SLACK_API_URL"])
+			if tt.args.environment["SLACK_API_URL"] != "" && config.ApiUrl != tt.args.environment["SLACK_API_URL"] {
+				t.Errorf("LoadConfiguration() = %v, want %v", config.ApiUrl, tt.args.environment["SLACK_API_URL"])
 			}
 
-			if tt.args.environment["SLACK_APP_TOKEN"] != "" && config.appToken != tt.args.environment["SLACK_APP_TOKEN"] {
-				t.Errorf("LoadConfiguration() = %v, want %v", config.appToken, tt.args.environment["SLACK_APP_TOKEN"])
+			if tt.args.environment["SLACK_APP_TOKEN"] != "" && config.AppToken != tt.args.environment["SLACK_APP_TOKEN"] {
+				t.Errorf("LoadConfiguration() = %v, want %v", config.AppToken, tt.args.environment["SLACK_APP_TOKEN"])
 			}
 
-			if tt.args.environment["SLACK_BOT_TOKEN"] != "" && config.botToken != tt.args.environment["SLACK_BOT_TOKEN"] {
-				t.Errorf("LoadConfiguration() = %v, want %v", config.botToken, tt.args.environment["SLACK_BOT_TOKEN"])
+			if tt.args.environment["SLACK_BOT_TOKEN"] != "" && config.BotToken != tt.args.environment["SLACK_BOT_TOKEN"] {
+				t.Errorf("LoadConfiguration() = %v, want %v", config.BotToken, tt.args.environment["SLACK_BOT_TOKEN"])
 			}
 
-			if tt.args.environment["MAX_CONNECT_ATTEMPTS"] != "" && strconv.Itoa(config.maxConnectAttempts) != tt.args.environment["MAX_CONNECT_ATTEMPTS"] {
-				t.Errorf("LoadConfiguration() = %v, want %v", config.maxConnectAttempts, tt.args.environment["MAX_CONNECT_ATTEMPTS"])
+			if tt.args.environment["MAX_CONNECT_ATTEMPTS"] != "" && strconv.Itoa(config.MaxConnectAttempts) != tt.args.environment["MAX_CONNECT_ATTEMPTS"] {
+				t.Errorf("LoadConfiguration() = %v, want %v", config.MaxConnectAttempts, tt.args.environment["MAX_CONNECT_ATTEMPTS"])
 			}
 
-			if tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"] != "" && strconv.FormatBool(config.debugWssReconnects) != tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"] {
-				t.Errorf("LoadConfiguration() = %v, want %v", config.debugWssReconnects, tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"])
+			if tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"] != "" && strconv.FormatBool(config.DebugWssReconnects) != tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"] {
+				t.Errorf("LoadConfiguration() = %v, want %v", config.DebugWssReconnects, tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"])
 			}
 		})
 	}

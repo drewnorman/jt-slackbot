@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/brianvoe/gofakeit/v6"
-	slackhttp "github.com/drewnorman/jt-slackbot/http"
+	"github.com/drewnorman/jt-slackbot/slack"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -51,12 +51,12 @@ func defaultFakeHttpClient(
 
 func fakeClient(
 	data map[string]interface{},
-) (*slackhttp.Client, error) {
+) (*slack.HttpClient, error) {
 	httpClient, err := defaultFakeHttpClient(data)
 	if err != nil {
 		return nil, err
 	}
-	return slackhttp.NewClient(&slackhttp.ClientParameters{
+	return slack.NewHttpClient(&slack.HttpClientParameters{
 		ApiUrl:     gofakeit.URL(),
 		AppToken:   gofakeit.UUID(),
 		BotToken:   gofakeit.UUID(),

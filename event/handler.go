@@ -3,16 +3,16 @@ package event
 import (
 	"container/list"
 	"errors"
-	"github.com/drewnorman/jt-slackbot/http"
+	"github.com/drewnorman/jt-slackbot/slack"
 )
 
 type Handler struct {
-	httpClient     *http.Client
+	httpClient     *slack.HttpClient
 	processedQueue *list.List
 }
 
 type HandlerParameters struct {
-	HttpClient *http.Client
+	HttpClient *slack.HttpClient
 }
 
 const processedQueueMaxLength = 5
