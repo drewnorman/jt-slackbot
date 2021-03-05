@@ -3,7 +3,7 @@ package bot
 import (
 	"errors"
 	"fmt"
-	"github.com/drewnorman/jt-slackbot/event"
+	"github.com/drewnorman/jt-slackbot/events"
 	"github.com/drewnorman/jt-slackbot/slack"
 	"os"
 	"os/signal"
@@ -18,7 +18,7 @@ type Bot struct {
 	debugWssReconnects bool
 	httpClient         *slack.HttpClient
 	wsClient           *slack.WsClient
-	handler            *event.Handler
+	handler            *events.Handler
 	interrupt          chan os.Signal
 }
 
@@ -139,8 +139,8 @@ func (bot *Bot) PrepareWorkspace() error {
 
 func (bot *Bot) Start() (bool, error) {
 	var err error
-	bot.handler, err = event.NewHandler(&event.HandlerParameters{
-		HttpClient: bot.httpClient,
+	bot.handler, err = events.NewHandler(&events.Parameters{
+		SlackHttpClient: bot.httpClient,
 	})
 	if err != nil {
 		return false, err

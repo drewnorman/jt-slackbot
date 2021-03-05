@@ -27,11 +27,12 @@ func fakeHttpClient(
 }
 
 func defaultFakeHttpClient(
+	t *testing.T,
 	data map[string]interface{},
-) (*http.Client, error) {
+) *http.Client {
 	bodyJson, err := json.Marshal(data)
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	return fakeHttpClient(
 		func(req *http.Request) *http.Response {
@@ -45,7 +46,7 @@ func defaultFakeHttpClient(
 				),
 			}
 		},
-	), nil
+	)
 }
 
 func TestNewClient(t *testing.T) {
@@ -150,17 +151,13 @@ func TestClient_RequestWssUrl(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			httpClient, err := defaultFakeHttpClient(
-				map[string]interface{}{
-					"url": apiUrl,
-				},
-			)
-			if err != nil {
-				t.Errorf("RequestWssUrl() error = %v, wantErr %v", err, false)
-				return
-			}
 			client := &HttpClient{
-				httpClient: httpClient,
+				httpClient: defaultFakeHttpClient(
+					t,
+					map[string]interface{}{
+						"url": apiUrl,
+					},
+				),
 			}
 			url, err := client.RequestWssUrl(tt.args.debugWssReconnects)
 			if (err != nil) != tt.wantErr {
@@ -204,19 +201,15 @@ func TestClient_JoinChannel(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			httpClient, err := defaultFakeHttpClient(
-				map[string]interface{}{
-					"ok": true,
-				},
-			)
-			if err != nil {
-				t.Errorf("JoinChannel() error = %v, wantErr %v", err, false)
-				return
-			}
 			client := &HttpClient{
-				httpClient: httpClient,
+				httpClient: defaultFakeHttpClient(
+					t,
+					map[string]interface{}{
+						"ok": true,
+					},
+				),
 			}
-			err = client.JoinChannel(tt.args.channelId)
+			err := client.JoinChannel(tt.args.channelId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("JoinChannel() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -248,17 +241,13 @@ func TestClient_PublicChannels(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			httpClient, err := defaultFakeHttpClient(
-				map[string]interface{}{
-					"channels": channels,
-				},
-			)
-			if err != nil {
-				t.Errorf("JoinChannel() error = %v, wantErr %v", err, false)
-				return
-			}
 			client := &HttpClient{
-				httpClient: httpClient,
+				httpClient: defaultFakeHttpClient(
+					t,
+					map[string]interface{}{
+						"channels": channels,
+					},
+				),
 			}
 			channels, err := client.PublicChannels()
 			if (err != nil) != tt.wantErr {
@@ -340,16 +329,12 @@ func TestClient_SendMessageToChannel(t *testing.T) {
 					},
 				)
 			} else {
-				var err error
-				httpClient, err = defaultFakeHttpClient(
+				httpClient = defaultFakeHttpClient(
+					t,
 					map[string]interface{}{
 						"ok": true,
 					},
 				)
-				if err != nil {
-					t.Errorf("SendMessageToChannel() error = %v, wantErr %v", err, false)
-					return
-				}
 			}
 
 			client := &HttpClient{

@@ -1,4 +1,4 @@
-package event
+package events
 
 import (
 	"container/list"
@@ -7,23 +7,33 @@ import (
 )
 
 type Handler struct {
-	httpClient     *slack.HttpClient
-	processedQueue *list.List
+	processedQueue    *list.List
+	appMentionHandler eventHandler
 }
 
-type HandlerParameters struct {
-	HttpClient *slack.HttpClient
+type Parameters struct {
+	SlackHttpClient *slack.HttpClient
+}
+
+type eventHandler interface {
+	Process(eventData map[string]interface{}) error
 }
 
 const processedQueueMaxLength = 5
 
-func NewHandler(params *HandlerParameters) (*Handler, error) {
-	if params.HttpClient == nil {
+func NewHandler(params *Parameters) (*Handler, error) {
+	if params.SlackHttpClient == nil {
 		return nil, errors.New("missing http client")
 	}
+	appMentionHandler, err := NewAppMentionHandler(&AppMentionHandlerParameters{
+		SlackHttpClient: params.SlackHttpClient,
+	})
+	if err != nil {
+		return nil, err
+	}
 	return &Handler{
-		httpClient:     params.HttpClient,
-		processedQueue: list.New(),
+		processedQueue:    list.New(),
+		appMentionHandler: appMentionHandler,
 	}, nil
 }
 
@@ -33,18 +43,24 @@ func (handler *Handler) Process(
 ) {
 	defer close(complete)
 	for event := range events {
-		eventId := event["event_id"].(string)
-
+		eventId, ok := event["event_id"].(string)
+		if !ok {
+			continue
+		}
 		if handler.hasAlreadyProcessed(eventId) {
 			continue
 		}
 
-		eventData := (event["event"]).(map[string]interface{})
+		eventData, ok := (event["event"]).(map[string]interface{})
+		if !ok {
+			continue
+		}
+
 		handler.processed(eventId)
 
 		switch eventData["type"] {
 		case "app_mention":
-			err := handler.processAppMentionEvent(event)
+			err := handler.appMentionHandler.Process(event)
 			if err != nil {
 				break
 			}
@@ -54,21 +70,6 @@ func (handler *Handler) Process(
 		}
 		break
 	}
-}
-
-func (handler *Handler) processAppMentionEvent(
-	event map[string]interface{},
-) error {
-	eventData := event["event"].(map[string]interface{})
-	channelId := eventData["channel"].(string)
-	err := handler.httpClient.SendMessageToChannel(
-		"woof",
-		channelId,
-	)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (handler *Handler) hasAlreadyProcessed(
