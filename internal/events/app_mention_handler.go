@@ -3,7 +3,7 @@ package events
 import (
 	"errors"
 	"fmt"
-	"github.com/drewnorman/jt-slackbot/slack"
+	"github.com/drewnorman/jt-slackbot/internal/slack"
 	"github.com/jdkato/prose/v2"
 	"strings"
 )
