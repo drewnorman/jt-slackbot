@@ -3,8 +3,8 @@ package bot
 import (
 	"errors"
 	"fmt"
-	"github.com/drewnorman/jt-slackbot/events"
-	"github.com/drewnorman/jt-slackbot/slack"
+	"github.com/drewnorman/jt-slackbot/internal/events"
+	"github.com/drewnorman/jt-slackbot/internal/slack"
 	"os"
 	"os/signal"
 	"time"

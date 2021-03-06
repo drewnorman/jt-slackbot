@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/drewnorman/jt-slackbot/slack"
+	"github.com/drewnorman/jt-slackbot/internal/slack"
 	"io/ioutil"
 	"net/http"
 	"testing"

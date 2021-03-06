@@ -3,7 +3,7 @@ package events
 import (
 	"container/list"
 	"errors"
-	"github.com/drewnorman/jt-slackbot/slack"
+	"github.com/drewnorman/jt-slackbot/internal/slack"
 )
 
 type Handler struct {
