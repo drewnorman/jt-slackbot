@@ -3,6 +3,7 @@ package configuration
 import (
 	"errors"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap/zapcore"
 	"os"
 	"strconv"
 )
@@ -15,6 +16,7 @@ type Configuration struct {
 	BotToken           string
 	MaxConnectAttempts int
 	DebugWssReconnects bool
+	LogLevel           zapcore.Level
 	loadEnvironment    EnvLoader
 }
 
@@ -61,6 +63,24 @@ func (config *Configuration) Load() error {
 		config.DebugWssReconnects = false
 	} else {
 		config.DebugWssReconnects = debugWssReconnects == "true"
+	}
+
+	logLevel, exists := os.LookupEnv("LOG_LEVEL")
+	if !exists {
+		config.LogLevel = zapcore.InfoLevel
+	} else {
+		switch logLevel {
+		case "debug":
+			config.LogLevel = zapcore.DebugLevel
+		case "info":
+			config.LogLevel = zapcore.InfoLevel
+		case "warn":
+			config.LogLevel = zapcore.WarnLevel
+		case "error":
+			config.LogLevel = zapcore.ErrorLevel
+		default:
+			return errors.New("unrecognized log level")
+		}
 	}
 
 	return nil
