@@ -122,7 +122,18 @@ func (bot *Bot) AttemptToConnect() error {
 		zap.String("wssUrl", wssUrl),
 	)
 
-	bot.wsClient = slack.NewWsClient()
+	var err error
+	bot.logger.Debug("creating new slack ws client")
+	bot.wsClient, err = slack.NewWsClient(
+		slack.WsClientParameters{
+			Logger: bot.logger,
+		},
+	)
+	if err != nil {
+		return err
+	}
+	bot.logger.Debug("created new slack ws client")
+
 	attemptsLeft = bot.maxConnectAttempts
 	for attemptsLeft > 0 {
 		bot.logger.Debug("connecting to slack wss")
