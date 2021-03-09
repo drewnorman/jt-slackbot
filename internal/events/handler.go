@@ -4,14 +4,17 @@ import (
 	"container/list"
 	"errors"
 	"github.com/drewnorman/jt-slackbot/internal/slack"
+	"go.uber.org/zap"
 )
 
 type Handler struct {
+	logger            *zap.Logger
 	processedQueue    *list.List
 	appMentionHandler eventHandler
 }
 
 type Parameters struct {
+	Logger          *zap.Logger
 	SlackHttpClient *slack.HttpClient
 }
 
@@ -22,6 +25,9 @@ type eventHandler interface {
 const processedQueueMaxLength = 5
 
 func NewHandler(params *Parameters) (*Handler, error) {
+	if params.Logger == nil {
+		return nil, errors.New("missing logger")
+	}
 	if params.SlackHttpClient == nil {
 		return nil, errors.New("missing http client")
 	}
@@ -32,6 +38,7 @@ func NewHandler(params *Parameters) (*Handler, error) {
 		return nil, err
 	}
 	return &Handler{
+		logger:            params.Logger,
 		processedQueue:    list.New(),
 		appMentionHandler: appMentionHandler,
 	}, nil

@@ -7,11 +7,28 @@ import (
 	"errors"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/drewnorman/jt-slackbot/internal/slack"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 )
+
+func fakeZapLogger() *zap.Logger {
+	return zap.New(
+		zapcore.NewCore(
+			zapcore.NewJSONEncoder(
+				zap.NewProductionEncoderConfig(),
+			),
+			zapcore.AddSync(
+				os.NewFile(0, os.DevNull),
+			),
+			zap.FatalLevel,
+		),
+	)
+}
 
 type roundTripHandler func(req *http.Request) *http.Response
 
@@ -56,6 +73,7 @@ func fakeSlackHttpClient(
 
 	slackHttpClient, err := slack.NewHttpClient(
 		&slack.HttpClientParameters{
+			Logger:     fakeZapLogger(),
 			ApiUrl:     gofakeit.URL(),
 			AppToken:   gofakeit.UUID(),
 			BotToken:   gofakeit.UUID(),
@@ -108,6 +126,7 @@ func TestNewHandler(t *testing.T) {
 			name: "ReturnsNewHandler",
 			args: args{
 				params: &Parameters{
+					Logger: fakeZapLogger(),
 					SlackHttpClient: fakeSlackHttpClient(
 						t,
 						map[string]interface{}{},
@@ -117,9 +136,22 @@ func TestNewHandler(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "MissingLogger",
+			args: args{
+				params: &Parameters{
+					SlackHttpClient: fakeSlackHttpClient(
+						t,
+						map[string]interface{}{},
+					),
+				},
+			},
+			wantErr: true,
+		},
+		{
 			name: "MissingHttpClient",
 			args: args{
 				params: &Parameters{
+					Logger:          fakeZapLogger(),
 					SlackHttpClient: nil,
 				},
 			},
@@ -269,6 +301,7 @@ func TestHandler_Process(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			handler := &Handler{
+				logger:            fakeZapLogger(),
 				processedQueue:    list.New(),
 				appMentionHandler: tt.args.appMentionHandler,
 			}
