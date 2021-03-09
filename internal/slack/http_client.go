@@ -78,6 +78,7 @@ func (client *HttpClient) RequestWssUrl(
 		return "", errors.New("no url in response")
 	}
 	if debugWssReconnects {
+		client.logger.Debug("debugging wss reconnects")
 		wssUrl += "&debug_reconnects=true"
 	}
 	return wssUrl, nil
