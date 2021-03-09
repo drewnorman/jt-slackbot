@@ -5,7 +5,7 @@
 .env
 
 # Build artifacts
-jt-slackbot
+./jt-slackbot
 
 # Metrics
 logs
