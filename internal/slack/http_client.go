@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+// A slack.HttpClient provides alias
+// methods for making Slack API requests.
 type HttpClient struct {
 	logger     *zap.Logger
 	apiUrl     string
@@ -18,6 +20,8 @@ type HttpClient struct {
 	httpClient *http.Client
 }
 
+// slack.HttpClientParameters describe how
+// a new slack.HttpClient should be created.
 type HttpClientParameters struct {
 	Logger     *zap.Logger
 	ApiUrl     string
@@ -26,8 +30,12 @@ type HttpClientParameters struct {
 	HttpClient *http.Client
 }
 
+// defaultTimeout specifies the timeout for
+// requests in seconds
 const defaultTimeout = time.Duration(10) * time.Second
 
+// NewHttpClient returns a new slack.HttpClient
+// according to the given parameters.
 func NewHttpClient(
 	params *HttpClientParameters,
 ) (*HttpClient, error) {
@@ -62,6 +70,12 @@ func NewHttpClient(
 	}, nil
 }
 
+// RequestWssUrl returns a Slack WebSocket server
+// URL or an error if the request failed. If
+// debugWssReconnects is true, the URL is appended
+// with a query parameter indicating to Slack
+// that we intend to debug reconnecting to the
+// WebSocket server.
 func (client *HttpClient) RequestWssUrl(
 	debugWssReconnects bool,
 ) (string, error) {
@@ -84,6 +98,9 @@ func (client *HttpClient) RequestWssUrl(
 	return wssUrl, nil
 }
 
+// JoinChannel makes a request to Slack to
+// have the app to join the channel matching
+// the given channel ID.
 func (client *HttpClient) JoinChannel(
 	channelId string,
 ) error {
@@ -107,6 +124,8 @@ func (client *HttpClient) JoinChannel(
 	return nil
 }
 
+// PublicChannels returns an array of all public
+// public channels for the workspace.
 func (client *HttpClient) PublicChannels() ([]interface{}, error) {
 	data, err := client.get(
 		client.botToken,
@@ -127,6 +146,9 @@ func (client *HttpClient) PublicChannels() ([]interface{}, error) {
 	return channels, nil
 }
 
+// SendMessageToChannel makes a request to Slack
+// to send a given message on behalf of the app
+// to the channel matching the given channelId.
 func (client *HttpClient) SendMessageToChannel(
 	message string,
 	channelId string,
@@ -158,6 +180,9 @@ func (client *HttpClient) SendMessageToChannel(
 	return nil
 }
 
+// post makes a POST request to the Slack API
+// with the Slack authorization token and
+// returns the decoded response.
 func (client *HttpClient) post(
 	token string,
 	endpoint string,
@@ -192,6 +217,9 @@ func (client *HttpClient) post(
 	return *decoded, nil
 }
 
+// get makes a GET request to the Slack API
+// with the Slack authorization token and
+// returns the decoded response.
 func (client *HttpClient) get(
 	token string,
 	endpoint string,
