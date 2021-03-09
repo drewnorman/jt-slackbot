@@ -7,23 +7,32 @@ import (
 	"go.uber.org/zap"
 )
 
+// A Handler manages Slack event processing.
 type Handler struct {
 	logger            *zap.Logger
 	processedQueue    *list.List
 	appMentionHandler eventHandler
 }
 
+// Parameters describe how to create a new
+// Handler instance.
 type Parameters struct {
 	Logger          *zap.Logger
 	SlackHttpClient *slack.HttpClient
 }
 
+// An eventHandler processes a single event.
 type eventHandler interface {
 	Process(eventData map[string]interface{}) error
 }
 
+// processedQueueMaxLength defines the max
+// number of processed events to track at
+// any given time.
 const processedQueueMaxLength = 5
 
+// NewHandler returns a new Handler instance
+// according to the given parameters.
 func NewHandler(params *Parameters) (*Handler, error) {
 	if params.Logger == nil {
 		return nil, errors.New("missing logger")
@@ -47,6 +56,11 @@ func NewHandler(params *Parameters) (*Handler, error) {
 	}, nil
 }
 
+// Process delegates event handling per output
+// from the events channel to the appropriate
+// event handler based on the event type and
+// ensures events that are known to have already
+// been processed are not reprocessed.
 func (handler *Handler) Process(
 	events chan map[string]interface{},
 	complete chan struct{},
@@ -98,6 +112,9 @@ func (handler *Handler) Process(
 	}
 }
 
+// hasAlreadyProcessed returns true if the
+// event matching the given eventId is in
+// the queue of already-processed events.
 func (handler *Handler) hasAlreadyProcessed(
 	eventId string,
 ) bool {
@@ -109,6 +126,10 @@ func (handler *Handler) hasAlreadyProcessed(
 	return false
 }
 
+// processed adds the event to the front
+// of the queue of already-processed events
+// and removes the last event if the queue
+// size is greater than processedQueueMaxLength
 func (handler *Handler) processed(
 	eventId string,
 ) {

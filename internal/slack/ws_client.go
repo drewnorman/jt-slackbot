@@ -8,15 +8,22 @@ import (
 	"time"
 )
 
+// A slack.WsClient listens for Slack events and
+// acknowledges them before transferring them
+// for processing.
 type WsClient struct {
 	logger     *zap.Logger
 	connection *websocket.Conn
 }
 
+// slack.WsClientParameters describe how to
+// create a new slack.WsClient.
 type WsClientParameters struct {
 	Logger *zap.Logger
 }
 
+// NewWsClient returns a new slack.WsClient
+// according to the given parameters.
 func NewWsClient(
 	params WsClientParameters,
 ) (*WsClient, error) {
@@ -28,6 +35,8 @@ func NewWsClient(
 	}, nil
 }
 
+// Connect dials the given WebSocket server URL
+// and stores the resulting connection.
 func (client *WsClient) Connect(
 	wssUrl string,
 ) error {
@@ -42,6 +51,8 @@ func (client *WsClient) Connect(
 	return nil
 }
 
+// Close writes a close message to the connection
+// to allow for a graceful disconnection.
 func (client *WsClient) Close(
 	complete chan struct{},
 	timeout time.Duration,
@@ -69,11 +80,14 @@ func (client *WsClient) Close(
 	return timedOut, nil
 }
 
+// Disconnect closes the connection.
 func (client *WsClient) Disconnect() error {
 	client.logger.Debug("closing ws client connection")
 	return client.connection.Close()
 }
 
+// Listen receives Slack events and acknowledges
+// them before sending them into the events channel.
 func (client *WsClient) Listen(
 	events chan map[string]interface{},
 ) {

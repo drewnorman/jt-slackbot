@@ -8,8 +8,12 @@ import (
 	"strconv"
 )
 
+// EnvLoader loads the environment files
+// associated with the given filenames.
 type EnvLoader func(filenames ...string) (err error)
 
+// A Configuration is a collection of settings
+// for the application.
 type Configuration struct {
 	ApiUrl             string
 	AppToken           string
@@ -20,12 +24,19 @@ type Configuration struct {
 	loadEnvironment    EnvLoader
 }
 
+// NewConfiguration returns a new instance of
+// Configuration specifying the gotdotenv
+// library should load the environment variables.
 func NewConfiguration() *Configuration {
 	return &Configuration{
 		loadEnvironment: godotenv.Load,
 	}
 }
 
+// Load prepares the Configuration from
+// the environment, returning an error if the
+// required Configuration fields could not
+// be set.
 func (config *Configuration) Load() error {
 	exists := false
 	if err := config.loadEnvironment(); err != nil {
