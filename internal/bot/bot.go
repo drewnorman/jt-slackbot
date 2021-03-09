@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+// A Bot manages a Slack WebSocket connection and
+// processes events until failure or interrupt.
 type Bot struct {
 	logger             *zap.Logger
 	apiUrl             string
@@ -24,6 +26,8 @@ type Bot struct {
 	interrupt          chan os.Signal
 }
 
+// Parameters describe the configuration for
+// a new Bot.
 type Parameters struct {
 	Logger             *zap.Logger
 	ApiUrl             string
@@ -33,6 +37,8 @@ type Parameters struct {
 	DebugWssReconnects bool
 }
 
+// New returns a new instance of Bot according
+// to the given parameters.
 func New(params *Parameters) (*Bot, error) {
 	if params.Logger == nil {
 		return nil, errors.New("missing logger")
@@ -84,6 +90,10 @@ func New(params *Parameters) (*Bot, error) {
 	return bot, nil
 }
 
+// AttemptToConnect requests a Slack WebSocket URL
+// and attempts to connect with it, retrying until
+// the max attempts specified for the Bot have
+// been reached.
 func (bot *Bot) AttemptToConnect() error {
 	wssUrl := ""
 	attemptsLeft := bot.maxConnectAttempts
@@ -162,6 +172,9 @@ func (bot *Bot) AttemptToConnect() error {
 	return nil
 }
 
+// PrepareWorkspace retrieves all public channels
+// for the workspace and tries to join them one
+// at a time.
 func (bot *Bot) PrepareWorkspace() error {
 	channels, err := bot.httpClient.PublicChannels()
 	if err != nil {
@@ -192,6 +205,9 @@ func (bot *Bot) PrepareWorkspace() error {
 	return nil
 }
 
+// Start creates an event handler and begins
+// concurrent listening and processing of
+// Slack events.
 func (bot *Bot) Start() (bool, error) {
 	var err error
 	bot.logger.Debug("creating events handler")
