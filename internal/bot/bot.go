@@ -65,11 +65,14 @@ func New(params *Parameters) (*Bot, error) {
 		debugWssReconnects: debugWssReconnects,
 	}
 
-	httpClient, err := slack.NewHttpClient(&slack.HttpClientParameters{
-		ApiUrl:   bot.apiUrl,
-		AppToken: bot.appToken,
-		BotToken: bot.botToken,
-	})
+	httpClient, err := slack.NewHttpClient(
+		&slack.HttpClientParameters{
+			Logger:   bot.logger,
+			ApiUrl:   bot.apiUrl,
+			AppToken: bot.appToken,
+			BotToken: bot.botToken,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
