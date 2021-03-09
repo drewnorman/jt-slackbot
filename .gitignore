@@ -6,3 +6,6 @@
 
 # Build artifacts
 jt-slackbot
+
+# Metrics
+logs

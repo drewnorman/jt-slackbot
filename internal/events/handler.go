@@ -4,14 +4,17 @@ import (
 	"container/list"
 	"errors"
 	"github.com/drewnorman/jt-slackbot/internal/slack"
+	"go.uber.org/zap"
 )
 
 type Handler struct {
+	logger            *zap.Logger
 	processedQueue    *list.List
 	appMentionHandler eventHandler
 }
 
 type Parameters struct {
+	Logger          *zap.Logger
 	SlackHttpClient *slack.HttpClient
 }
 
@@ -22,16 +25,23 @@ type eventHandler interface {
 const processedQueueMaxLength = 5
 
 func NewHandler(params *Parameters) (*Handler, error) {
+	if params.Logger == nil {
+		return nil, errors.New("missing logger")
+	}
 	if params.SlackHttpClient == nil {
 		return nil, errors.New("missing http client")
 	}
-	appMentionHandler, err := NewAppMentionHandler(&AppMentionHandlerParameters{
-		SlackHttpClient: params.SlackHttpClient,
-	})
+	appMentionHandler, err := NewAppMentionHandler(
+		&AppMentionHandlerParameters{
+			Logger:          params.Logger,
+			SlackHttpClient: params.SlackHttpClient,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 	return &Handler{
+		logger:            params.Logger,
 		processedQueue:    list.New(),
 		appMentionHandler: appMentionHandler,
 	}, nil
@@ -45,14 +55,20 @@ func (handler *Handler) Process(
 	for event := range events {
 		eventId, ok := event["event_id"].(string)
 		if !ok {
+			handler.logger.Warn("failed to retrieve event id")
 			continue
 		}
 		if handler.hasAlreadyProcessed(eventId) {
+			handler.logger.Debug(
+				"already processed event",
+				zap.String("eventId", eventId),
+			)
 			continue
 		}
 
 		eventData, ok := (event["event"]).(map[string]interface{})
 		if !ok {
+			handler.logger.Warn("failed to retrieve event data")
 			continue
 		}
 
@@ -62,10 +78,20 @@ func (handler *Handler) Process(
 		case "app_mention":
 			err := handler.appMentionHandler.Process(event)
 			if err != nil {
+				handler.logger.Error(
+					"failed to process app mention event",
+					zap.String("err", err.Error()),
+					zap.String("eventId", eventId),
+				)
 				break
 			}
 			continue
 		default:
+			handler.logger.Debug(
+				"skipping processing of unrecognized event",
+				zap.String("eventId", eventId),
+				zap.String("eventType", eventData["type"].(string)),
+			)
 			continue
 		}
 		break

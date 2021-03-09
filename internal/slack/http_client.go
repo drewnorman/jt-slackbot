@@ -3,6 +3,7 @@ package slack
 import (
 	"encoding/json"
 	"errors"
+	"go.uber.org/zap"
 	"net/http"
 	"net/url"
 	"strings"
@@ -10,6 +11,7 @@ import (
 )
 
 type HttpClient struct {
+	logger     *zap.Logger
 	apiUrl     string
 	appToken   string
 	botToken   string
@@ -17,6 +19,7 @@ type HttpClient struct {
 }
 
 type HttpClientParameters struct {
+	Logger     *zap.Logger
 	ApiUrl     string
 	AppToken   string
 	BotToken   string
@@ -25,15 +28,20 @@ type HttpClientParameters struct {
 
 const defaultTimeout = time.Duration(10) * time.Second
 
-func NewHttpClient(params *HttpClientParameters) (*HttpClient, error) {
+func NewHttpClient(
+	params *HttpClientParameters,
+) (*HttpClient, error) {
+	if params.Logger == nil {
+		return nil, errors.New("missing logger")
+	}
 	if params.ApiUrl == "" {
-		return nil, errors.New("missing api url in client parameters")
+		return nil, errors.New("missing api url")
 	}
 	if params.AppToken == "" {
-		return nil, errors.New("missing app token in client parameters")
+		return nil, errors.New("missing app token")
 	}
 	if params.BotToken == "" {
-		return nil, errors.New("missing bot token in client parameters")
+		return nil, errors.New("missing bot token")
 	}
 
 	var httpClient *http.Client
@@ -46,6 +54,7 @@ func NewHttpClient(params *HttpClientParameters) (*HttpClient, error) {
 	}
 
 	return &HttpClient{
+		logger:     params.Logger,
 		apiUrl:     params.ApiUrl,
 		appToken:   params.AppToken,
 		botToken:   params.BotToken,
@@ -69,6 +78,7 @@ func (client *HttpClient) RequestWssUrl(
 		return "", errors.New("no url in response")
 	}
 	if debugWssReconnects {
+		client.logger.Debug("debugging wss reconnects")
 		wssUrl += "&debug_reconnects=true"
 	}
 	return wssUrl, nil

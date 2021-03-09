@@ -100,6 +100,77 @@ func TestLoadConfiguration(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "MissingLogLevel",
+			args: args{
+				environment: map[string]string{
+					"SLACK_API_URL":   gofakeit.URL(),
+					"SLACK_BOT_TOKEN": gofakeit.UUID(),
+					"SLACK_APP_TOKEN": gofakeit.UUID(),
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "DebugLogLevel",
+			args: args{
+				environment: map[string]string{
+					"SLACK_API_URL":   gofakeit.URL(),
+					"SLACK_BOT_TOKEN": gofakeit.UUID(),
+					"SLACK_APP_TOKEN": gofakeit.UUID(),
+					"LOG_LEVEL":       "debug",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "InfoLogLevel",
+			args: args{
+				environment: map[string]string{
+					"SLACK_API_URL":   gofakeit.URL(),
+					"SLACK_BOT_TOKEN": gofakeit.UUID(),
+					"SLACK_APP_TOKEN": gofakeit.UUID(),
+					"LOG_LEVEL":       "info",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "WarningErrorLevel",
+			args: args{
+				environment: map[string]string{
+					"SLACK_API_URL":   gofakeit.URL(),
+					"SLACK_BOT_TOKEN": gofakeit.UUID(),
+					"SLACK_APP_TOKEN": gofakeit.UUID(),
+					"LOG_LEVEL":       "warn",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "ErrorLogLevel",
+			args: args{
+				environment: map[string]string{
+					"SLACK_API_URL":   gofakeit.URL(),
+					"SLACK_BOT_TOKEN": gofakeit.UUID(),
+					"SLACK_APP_TOKEN": gofakeit.UUID(),
+					"LOG_LEVEL":       "error",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "UnrecognizedLogMode",
+			args: args{
+				environment: map[string]string{
+					"SLACK_API_URL":   gofakeit.URL(),
+					"SLACK_BOT_TOKEN": gofakeit.UUID(),
+					"SLACK_APP_TOKEN": gofakeit.UUID(),
+					"LOG_LEVEL":       "unknown",
+				},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -143,6 +214,10 @@ func TestLoadConfiguration(t *testing.T) {
 			}
 
 			if tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"] != "" && strconv.FormatBool(config.DebugWssReconnects) != tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"] {
+				t.Errorf("LoadConfiguration() = %v, want %v", config.DebugWssReconnects, tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"])
+			}
+
+			if tt.args.environment["LOG_LEVEL"] != "" && config.LogLevel.String() != tt.args.environment["LOG_LEVEL"] {
 				t.Errorf("LoadConfiguration() = %v, want %v", config.DebugWssReconnects, tt.args.environment["DEBUG_WEBSOCKET_RECONNECTS"])
 			}
 		})
