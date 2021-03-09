@@ -84,12 +84,27 @@ func New(params *Parameters) (*Bot, error) {
 func (bot *Bot) AttemptToConnect() error {
 	wssUrl := ""
 	attemptsLeft := bot.maxConnectAttempts
-	for attemptsLeft > 0 {
+	for {
 		var err error
-		wssUrl, err = bot.httpClient.RequestWssUrl(bot.debugWssReconnects)
+		bot.logger.Debug("requesting slack wss url")
+		wssUrl, err = bot.httpClient.RequestWssUrl(
+			bot.debugWssReconnects,
+		)
 		if err != nil {
+			bot.logger.Warn(
+				"failed requesting slack wss url",
+				zap.String("err", err.Error()),
+			)
 			attemptsLeft -= 1
-			continue
+			if attemptsLeft > 0 {
+				bot.logger.Debug(
+					"retrying slack wss url request",
+					zap.Int("attemptsLeft", attemptsLeft),
+				)
+				continue
+			}
+			bot.logger.Debug("failed to retrieve slack wss url")
+			break
 		}
 		break
 	}
@@ -99,12 +114,21 @@ func (bot *Bot) AttemptToConnect() error {
 			bot.maxConnectAttempts,
 		)
 	}
+	bot.logger.Debug(
+		"retrieved slack wss url",
+		zap.String("wssUrl", wssUrl),
+	)
 
 	bot.wsClient = slack.NewWsClient()
 	attemptsLeft = bot.maxConnectAttempts
 	for attemptsLeft > 0 {
+		bot.logger.Debug("connecting to slack wss")
 		err := bot.wsClient.Connect(wssUrl)
 		if err != nil {
+			bot.logger.Warn(
+				"failed connecting to slack wss",
+				zap.String("err", err.Error()),
+			)
 			attemptsLeft -= 1
 			if attemptsLeft == 0 {
 				return fmt.Errorf(
@@ -112,6 +136,10 @@ func (bot *Bot) AttemptToConnect() error {
 					bot.maxConnectAttempts,
 				)
 			}
+			bot.logger.Debug(
+				"retrying slack wss connection",
+				zap.Int("attemptsLeft", attemptsLeft),
+			)
 			continue
 		}
 		break
@@ -125,14 +153,20 @@ func (bot *Bot) PrepareWorkspace() error {
 	if err != nil {
 		return err
 	}
+	bot.logger.Debug("retrieved public channels for workspace")
 
 	for _, channel := range channels {
 		channelId, ok := channel.(map[string]interface{})["id"].(string)
 		if !ok {
+			bot.logger.Warn("failed to determine channel id")
 			continue
 		}
 		err = bot.httpClient.JoinChannel(channelId)
 		if err != nil {
+			bot.logger.Warn(
+				"failed to join channel",
+				zap.String("channelId", channelId),
+			)
 			continue
 		}
 	}
@@ -146,25 +180,31 @@ func (bot *Bot) PrepareWorkspace() error {
 
 func (bot *Bot) Start() (bool, error) {
 	var err error
+	bot.logger.Debug("creating events handler")
 	bot.handler, err = events.NewHandler(&events.Parameters{
 		SlackHttpClient: bot.httpClient,
 	})
 	if err != nil {
 		return false, err
 	}
+	bot.logger.Debug("created events handler")
 
-	events := make(chan map[string]interface{})
+	eventsStream := make(chan map[string]interface{})
 	complete := make(chan struct{})
 
-	go bot.wsClient.Listen(events)
-	go bot.handler.Process(events, complete)
+	bot.logger.Debug("starting event listening and handling")
+	go bot.wsClient.Listen(eventsStream)
+	go bot.handler.Process(eventsStream, complete)
+	bot.logger.Debug("started event listening and handling")
 
 	restart := true
 	for {
 		select {
 		case <-complete:
+			bot.logger.Info("processing completed")
 			break
 		case <-bot.interrupt:
+			bot.logger.Info("received interrupt signal")
 			restart = false
 			break
 		default:
@@ -173,9 +213,13 @@ func (bot *Bot) Start() (bool, error) {
 		break
 	}
 
+	bot.logger.Debug("closing ws client")
 	_, err = bot.wsClient.Close(complete, 1*time.Second)
 	if err != nil {
 		return false, err
 	}
+	bot.logger.Debug("closed ws client")
+
+	bot.logger.Debug("disconnecting from wss")
 	return restart, bot.wsClient.Disconnect()
 }
