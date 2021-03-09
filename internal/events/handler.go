@@ -31,9 +31,12 @@ func NewHandler(params *Parameters) (*Handler, error) {
 	if params.SlackHttpClient == nil {
 		return nil, errors.New("missing http client")
 	}
-	appMentionHandler, err := NewAppMentionHandler(&AppMentionHandlerParameters{
-		SlackHttpClient: params.SlackHttpClient,
-	})
+	appMentionHandler, err := NewAppMentionHandler(
+		&AppMentionHandlerParameters{
+			Logger:          params.Logger,
+			SlackHttpClient: params.SlackHttpClient,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}

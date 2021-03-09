@@ -18,6 +18,7 @@ func TestNewAppMentionHandler(t *testing.T) {
 			name: "ReturnsNewHandler",
 			args: args{
 				params: &AppMentionHandlerParameters{
+					Logger: fakeZapLogger(),
 					SlackHttpClient: fakeSlackHttpClient(
 						t,
 						map[string]interface{}{},
@@ -27,9 +28,23 @@ func TestNewAppMentionHandler(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "MissingLogger",
+			args: args{
+				params: &AppMentionHandlerParameters{
+					Logger: nil,
+					SlackHttpClient: fakeSlackHttpClient(
+						t,
+						map[string]interface{}{},
+					),
+				},
+			},
+			wantErr: true,
+		},
+		{
 			name: "MissingSlackHttpClient",
 			args: args{
 				params: &AppMentionHandlerParameters{
+					Logger:          fakeZapLogger(),
 					SlackHttpClient: nil,
 				},
 			},
@@ -87,7 +102,8 @@ func TestAppMentionHandler_Process(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			handler := &AppMentionHandler{
-				SlackHttpClient: fakeSlackHttpClient(
+				logger: fakeZapLogger(),
+				slackHttpClient: fakeSlackHttpClient(
 					t,
 					map[string]interface{}{
 						"ok": true,

@@ -5,14 +5,17 @@ import (
 	"fmt"
 	"github.com/drewnorman/jt-slackbot/internal/slack"
 	"github.com/jdkato/prose/v2"
+	"go.uber.org/zap"
 	"strings"
 )
 
 type AppMentionHandler struct {
-	SlackHttpClient *slack.HttpClient
+	logger          *zap.Logger
+	slackHttpClient *slack.HttpClient
 }
 
 type AppMentionHandlerParameters struct {
+	Logger          *zap.Logger
 	SlackHttpClient *slack.HttpClient
 }
 
@@ -25,11 +28,15 @@ type appMentionEvent struct {
 func NewAppMentionHandler(
 	params *AppMentionHandlerParameters,
 ) (*AppMentionHandler, error) {
+	if params.Logger == nil {
+		return nil, errors.New("missing logger")
+	}
 	if params.SlackHttpClient == nil {
 		return nil, errors.New("missing slack http client")
 	}
 	return &AppMentionHandler{
-		SlackHttpClient: params.SlackHttpClient,
+		logger:          params.Logger,
+		slackHttpClient: params.SlackHttpClient,
 	}, nil
 }
 
@@ -51,7 +58,7 @@ func (handler *AppMentionHandler) Process(
 	}
 
 	for _, tok := range doc.Tokens() {
-		err = handler.SlackHttpClient.SendMessageToChannel(
+		err = handler.slackHttpClient.SendMessageToChannel(
 			tok.Text,
 			event.channelId,
 		)
