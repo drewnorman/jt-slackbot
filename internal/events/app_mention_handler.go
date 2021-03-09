@@ -9,22 +9,31 @@ import (
 	"strings"
 )
 
+// An AppMentionHandler processes app
+// mention events.
 type AppMentionHandler struct {
 	logger          *zap.Logger
 	slackHttpClient *slack.HttpClient
 }
 
+// AppMentionHandlerParameters describe
+// how to create a new AppMentionHandler.
 type AppMentionHandlerParameters struct {
 	Logger          *zap.Logger
 	SlackHttpClient *slack.HttpClient
 }
 
+// An appMentionEvent defines the
+// attributes of an app mention event.
 type appMentionEvent struct {
 	appUserId string
 	channelId string
 	text      string
 }
 
+// NewAppMentionHandler returns a new
+// instance of AppMentionHandler
+// according to the given parameters.
 func NewAppMentionHandler(
 	params *AppMentionHandlerParameters,
 ) (*AppMentionHandler, error) {
@@ -40,6 +49,8 @@ func NewAppMentionHandler(
 	}, nil
 }
 
+// Process processes the given event data
+// and tries to respond appropriately.
 func (handler *AppMentionHandler) Process(
 	eventData map[string]interface{},
 ) error {
@@ -70,6 +81,9 @@ func (handler *AppMentionHandler) Process(
 	return nil
 }
 
+// eventFromData returns a new appMentionEvent
+// from the given event data or an error if
+// any of the necessary data is missing.
 func eventFromData(
 	data map[string]interface{},
 ) (*appMentionEvent, error) {
