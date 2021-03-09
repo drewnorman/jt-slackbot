@@ -4,11 +4,28 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/brianvoe/gofakeit/v6"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"reflect"
 	"testing"
 )
+
+func fakeZapLogger() *zap.Logger {
+	return zap.New(
+		zapcore.NewCore(
+			zapcore.NewJSONEncoder(
+				zap.NewProductionEncoderConfig(),
+			),
+			zapcore.AddSync(
+				os.NewFile(0, os.DevNull),
+			),
+			zap.FatalLevel,
+		),
+	)
+}
 
 type roundTripHandler func(req *http.Request) *http.Response
 
@@ -54,10 +71,6 @@ func TestNewClient(t *testing.T) {
 		params *HttpClientParameters
 	}
 
-	apiUrl := gofakeit.URL()
-	appToken := gofakeit.UUID()
-	botToken := gofakeit.UUID()
-
 	tests := []struct {
 		name    string
 		args    args
@@ -65,23 +78,37 @@ func TestNewClient(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "ReturnsNewClient",
+			name: "ReturnsClient",
 			args: args{
 				params: &HttpClientParameters{
-					ApiUrl:   apiUrl,
-					AppToken: appToken,
-					BotToken: botToken,
+					Logger:   fakeZapLogger(),
+					ApiUrl:   gofakeit.URL(),
+					AppToken: gofakeit.UUID(),
+					BotToken: gofakeit.UUID(),
 				},
 			},
 			wantErr: false,
 		},
 		{
+			name: "MissingLogger",
+			args: args{
+				params: &HttpClientParameters{
+					Logger:   nil,
+					ApiUrl:   gofakeit.URL(),
+					AppToken: gofakeit.UUID(),
+					BotToken: gofakeit.UUID(),
+				},
+			},
+			wantErr: true,
+		},
+		{
 			name: "MissingApiUrl",
 			args: args{
 				params: &HttpClientParameters{
+					Logger:   fakeZapLogger(),
 					ApiUrl:   "",
-					AppToken: appToken,
-					BotToken: botToken,
+					AppToken: gofakeit.UUID(),
+					BotToken: gofakeit.UUID(),
 				},
 			},
 			wantErr: true,
@@ -90,9 +117,10 @@ func TestNewClient(t *testing.T) {
 			name: "MissingAppToken",
 			args: args{
 				params: &HttpClientParameters{
-					ApiUrl:   apiUrl,
+					Logger:   fakeZapLogger(),
+					ApiUrl:   gofakeit.URL(),
 					AppToken: "",
-					BotToken: botToken,
+					BotToken: gofakeit.UUID(),
 				},
 			},
 			wantErr: true,
@@ -101,8 +129,9 @@ func TestNewClient(t *testing.T) {
 			name: "MissingBotToken",
 			args: args{
 				params: &HttpClientParameters{
-					ApiUrl:   apiUrl,
-					AppToken: appToken,
+					Logger:   fakeZapLogger(),
+					ApiUrl:   gofakeit.URL(),
+					AppToken: gofakeit.UUID(),
 					BotToken: "",
 				},
 			},
@@ -114,7 +143,11 @@ func TestNewClient(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := NewHttpClient(tt.args.params)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("NewHttpClient() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"NewHttpClient() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 			}
 		})
 	}
@@ -152,6 +185,7 @@ func TestClient_RequestWssUrl(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := &HttpClient{
+				logger: fakeZapLogger(),
 				httpClient: defaultFakeHttpClient(
 					t,
 					map[string]interface{}{
@@ -159,14 +193,24 @@ func TestClient_RequestWssUrl(t *testing.T) {
 					},
 				),
 			}
-			url, err := client.RequestWssUrl(tt.args.debugWssReconnects)
+			url, err := client.RequestWssUrl(
+				tt.args.debugWssReconnects,
+			)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("RequestWssUrl() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"RequestWssUrl() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 				return
 			}
 
 			if url != tt.want {
-				t.Errorf("RequestWssUrl() got = %s, want %s", url, tt.want)
+				t.Errorf(
+					"RequestWssUrl() got = %s, want %s",
+					url,
+					tt.want,
+				)
 			}
 		})
 	}
@@ -202,6 +246,7 @@ func TestClient_JoinChannel(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := &HttpClient{
+				logger: fakeZapLogger(),
 				httpClient: defaultFakeHttpClient(
 					t,
 					map[string]interface{}{
@@ -211,7 +256,11 @@ func TestClient_JoinChannel(t *testing.T) {
 			}
 			err := client.JoinChannel(tt.args.channelId)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("JoinChannel() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"JoinChannel() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 			}
 		})
 	}
@@ -242,6 +291,7 @@ func TestClient_PublicChannels(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := &HttpClient{
+				logger: fakeZapLogger(),
 				httpClient: defaultFakeHttpClient(
 					t,
 					map[string]interface{}{
@@ -251,12 +301,20 @@ func TestClient_PublicChannels(t *testing.T) {
 			}
 			channels, err := client.PublicChannels()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("JoinPublicChannels() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"JoinPublicChannels() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 				return
 			}
 			for index, channel := range channels {
 				if !reflect.DeepEqual(channel, tt.want[index]) {
-					t.Errorf("JoinPublicChannels() = %v, want %v", channels, tt.want)
+					t.Errorf(
+						"JoinPublicChannels() = %v, want %v",
+						channels,
+						tt.want,
+					)
 				}
 			}
 		})
@@ -318,7 +376,10 @@ func TestClient_SendMessageToChannel(t *testing.T) {
 				httpClient = fakeHttpClient(
 					func(req *http.Request) *http.Response {
 						header := http.Header{}
-						header.Add("Content-Type", "application/json")
+						header.Add(
+							"Content-Type",
+							"application/json",
+						)
 						return &http.Response{
 							StatusCode: 200,
 							Header:     header,
@@ -338,11 +399,19 @@ func TestClient_SendMessageToChannel(t *testing.T) {
 			}
 
 			client := &HttpClient{
+				logger:     fakeZapLogger(),
 				httpClient: httpClient,
 			}
-			err := client.SendMessageToChannel(tt.args.message, tt.args.channelId)
+			err := client.SendMessageToChannel(
+				tt.args.message,
+				tt.args.channelId,
+			)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("SendMessageToChannel() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"SendMessageToChannel() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 			}
 		})
 	}
