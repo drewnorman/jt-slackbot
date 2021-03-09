@@ -7,18 +7,16 @@ import (
 	"os"
 )
 
+// LoggerParameters specify how a new
+// zap.Logger should be created.
 type LoggerParameters struct {
 	Level   zapcore.Level
 	Writers []io.Writer
 }
 
-const (
-	FilePath   = "/var/log/jt-slackbot/core.log"
-	MaxSize    = 100 // Megabytes
-	MaxBackups = 2
-	MaxAge     = 28 // Days
-)
-
+// NewLogger returns a new instance of
+// zap.Logger according to the given
+// parameters.
 func NewLogger(params LoggerParameters) *zap.Logger {
 	var writeSyncer zapcore.WriteSyncer
 
