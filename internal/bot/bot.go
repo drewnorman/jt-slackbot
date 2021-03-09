@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"github.com/drewnorman/jt-slackbot/internal/events"
 	"github.com/drewnorman/jt-slackbot/internal/slack"
+	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"time"
 )
 
 type Bot struct {
+	logger             *zap.Logger
 	apiUrl             string
 	appToken           string
 	botToken           string
@@ -23,6 +25,7 @@ type Bot struct {
 }
 
 type Parameters struct {
+	Logger             *zap.Logger
 	ApiUrl             string
 	AppToken           string
 	BotToken           string
@@ -31,6 +34,9 @@ type Parameters struct {
 }
 
 func New(params *Parameters) (*Bot, error) {
+	if params.Logger == nil {
+		return nil, errors.New("missing logger")
+	}
 	if params.ApiUrl == "" {
 		return nil, errors.New("missing api url")
 	}
@@ -51,6 +57,7 @@ func New(params *Parameters) (*Bot, error) {
 	}
 
 	bot := &Bot{
+		logger:             params.Logger,
 		apiUrl:             params.ApiUrl,
 		appToken:           params.AppToken,
 		botToken:           params.BotToken,

@@ -2,8 +2,25 @@ package bot
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"os"
 	"testing"
 )
+
+func fakeZapLogger() *zap.Logger {
+	return zap.New(
+		zapcore.NewCore(
+			zapcore.NewJSONEncoder(
+				zap.NewProductionEncoderConfig(),
+			),
+			zapcore.AddSync(
+				os.NewFile(0, os.DevNull),
+			),
+			zap.FatalLevel,
+		),
+	)
+}
 
 func TestNew(t *testing.T) {
 	type args struct {
@@ -18,6 +35,7 @@ func TestNew(t *testing.T) {
 			name: "ReturnsNewBot",
 			args: args{
 				params: &Parameters{
+					Logger:   fakeZapLogger(),
 					ApiUrl:   gofakeit.URL(),
 					AppToken: gofakeit.UUID(),
 					BotToken: gofakeit.UUID(),
@@ -26,9 +44,21 @@ func TestNew(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "MissingLogger",
+			args: args{
+				params: &Parameters{
+					ApiUrl:   gofakeit.URL(),
+					AppToken: gofakeit.UUID(),
+					BotToken: gofakeit.UUID(),
+				},
+			},
+			wantErr: true,
+		},
+		{
 			name: "MissingApiUrl",
 			args: args{
 				params: &Parameters{
+					Logger:   fakeZapLogger(),
 					AppToken: gofakeit.UUID(),
 					BotToken: gofakeit.UUID(),
 				},
@@ -39,6 +69,7 @@ func TestNew(t *testing.T) {
 			name: "MissingAppToken",
 			args: args{
 				params: &Parameters{
+					Logger:   fakeZapLogger(),
 					ApiUrl:   gofakeit.URL(),
 					BotToken: gofakeit.UUID(),
 				},
@@ -49,6 +80,7 @@ func TestNew(t *testing.T) {
 			name: "MissingBotToken",
 			args: args{
 				params: &Parameters{
+					Logger:   fakeZapLogger(),
 					ApiUrl:   gofakeit.URL(),
 					AppToken: gofakeit.UUID(),
 				},
