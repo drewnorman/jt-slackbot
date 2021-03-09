@@ -195,9 +195,12 @@ func (bot *Bot) PrepareWorkspace() error {
 func (bot *Bot) Start() (bool, error) {
 	var err error
 	bot.logger.Debug("creating events handler")
-	bot.handler, err = events.NewHandler(&events.Parameters{
-		SlackHttpClient: bot.httpClient,
-	})
+	bot.handler, err = events.NewHandler(
+		&events.Parameters{
+			Logger:          bot.logger,
+			SlackHttpClient: bot.httpClient,
+		},
+	)
 	if err != nil {
 		return false, err
 	}
