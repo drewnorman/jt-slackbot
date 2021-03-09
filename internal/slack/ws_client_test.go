@@ -29,6 +29,44 @@ func upgradeHttpUrl(httpUrl string) string {
 	return "ws://" + url
 }
 
+func TestNewWsClient(t *testing.T) {
+	type args struct {
+		params WsClientParameters
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "ReturnsWsClient",
+			args: args{
+				params: WsClientParameters{
+					Logger: fakeZapLogger(),
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "MissingLogger",
+			args: args{
+				params: WsClientParameters{},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(
+			tt.name, func(t *testing.T) {
+				_, err := NewWsClient(tt.args.params)
+				if (err != nil) != tt.wantErr {
+					t.Errorf("NewWsClient() error = %v, wantErr %v", err, tt.wantErr)
+				}
+			},
+		)
+	}
+}
+
 func TestClient_Connect(t *testing.T) {
 	fakeServer, wssUrl := fakeWebsocketServer(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -66,8 +104,16 @@ func TestClient_Connect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client := NewWsClient()
-			err := client.Connect(tt.args.wssUrl)
+			client, err := NewWsClient(
+				WsClientParameters{
+					Logger: fakeZapLogger(),
+				},
+			)
+			if err != nil {
+				t.Errorf("Connect() error = %v, wantErr %v", err, false)
+			}
+
+			err = client.Connect(tt.args.wssUrl)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Connect() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -117,8 +163,17 @@ func TestClient_Close(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client := NewWsClient()
-			err := client.Connect(wssUrl)
+			client, err := NewWsClient(
+				WsClientParameters{
+					Logger: fakeZapLogger(),
+				},
+			)
+
+			if err != nil {
+				t.Errorf("Close() error = %v, wantErr %v", err, false)
+			}
+
+			err = client.Connect(wssUrl)
 			if err != nil {
 				t.Errorf("Close() error = %v, wantErr %v", err, false)
 			}
@@ -233,8 +288,17 @@ func TestClient_Listen(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client := NewWsClient()
-			err := client.Connect(wssUrl)
+			client, err := NewWsClient(
+				WsClientParameters{
+					Logger: fakeZapLogger(),
+				},
+			)
+
+			if err != nil {
+				t.Errorf("Close() error = %v, wantErr %v", err, false)
+			}
+
+			err = client.Connect(wssUrl)
 			if err != nil {
 				t.Errorf("Close() error = %v, wantErr %v", err, false)
 			}
