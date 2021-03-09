@@ -52,14 +52,20 @@ func (handler *Handler) Process(
 	for event := range events {
 		eventId, ok := event["event_id"].(string)
 		if !ok {
+			handler.logger.Warn("failed to retrieve event id")
 			continue
 		}
 		if handler.hasAlreadyProcessed(eventId) {
+			handler.logger.Debug(
+				"already processed event",
+				zap.String("eventId", eventId),
+			)
 			continue
 		}
 
 		eventData, ok := (event["event"]).(map[string]interface{})
 		if !ok {
+			handler.logger.Warn("failed to retrieve event data")
 			continue
 		}
 
@@ -69,10 +75,20 @@ func (handler *Handler) Process(
 		case "app_mention":
 			err := handler.appMentionHandler.Process(event)
 			if err != nil {
+				handler.logger.Error(
+					"failed to process app mention event",
+					zap.String("err", err.Error()),
+					zap.String("eventId", eventId),
+				)
 				break
 			}
 			continue
 		default:
+			handler.logger.Debug(
+				"skipping processing of unrecognized event",
+				zap.String("eventId", eventId),
+				zap.String("eventType", eventData["type"].(string)),
+			)
 			continue
 		}
 		break
