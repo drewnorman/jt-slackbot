@@ -45,40 +45,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	restart := true
-	for restart {
-		logger.Info("connecting to slack")
-		err = slackBot.AttemptToConnect()
-		if err != nil {
-			logger.Fatal(
-				"failed to connect",
-				zap.String("err", err.Error()),
-			)
-		}
-		logger.Info("connected to slack")
-
-		logger.Info("preparing workspace")
-		err = slackBot.PrepareWorkspace()
-		if err != nil {
-			logger.Fatal(
-				"failed to prepare workspace",
-				zap.String("err", err.Error()),
-			)
-		}
-		logger.Info("prepared workspace")
-
-		logger.Info("starting bot")
-		restart, err = slackBot.Start()
-		if err != nil {
-			logger.Fatal(
-				"failed during bot execution",
-				zap.String("err", err.Error()),
-			)
-		}
-		logger.Info("stopped bot")
-
-		logger.Info("reconnecting to slack")
+	logger.Info("starting bot")
+	err = slackBot.Run()
+	if err != nil {
+		logger.Error(
+			"error during bot execution",
+			zap.String("err", err.Error()),
+		)
 	}
+	logger.Info("stopped bot")
 
 	err = logger.Sync()
 	if err != nil {
