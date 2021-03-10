@@ -90,11 +90,47 @@ func New(params *Parameters) (*Bot, error) {
 	return bot, nil
 }
 
-// AttemptToConnect requests a Slack WebSocket URL
+// Run connects to Slack, prepares the workspace,
+// and executes the main sequence until it
+// encounters an error or is explicitly told to
+// stop and not restart
+func (bot *Bot) Run() error {
+	restart := true
+	var err error
+	for restart {
+		bot.logger.Info("connecting to slack")
+		err := bot.attemptToConnect()
+		if err != nil {
+			return err
+		}
+		bot.logger.Info("connected to slack")
+
+		bot.logger.Info("preparing workspace")
+		err = bot.prepareWorkspace()
+		if err != nil {
+			return err
+		}
+		bot.logger.Info("prepared workspace")
+
+		bot.logger.Info("executing main sequence")
+		restart, err = bot.executeMainSequence()
+		if err != nil {
+			return err
+		}
+		bot.logger.Info("stopped main sequence")
+
+		if restart {
+			bot.logger.Info("reconnecting to slack")
+		}
+	}
+	return err
+}
+
+// attemptToConnect requests a Slack WebSocket URL
 // and attempts to connect with it, retrying until
 // the max attempts specified for the Bot have
 // been reached.
-func (bot *Bot) AttemptToConnect() error {
+func (bot *Bot) attemptToConnect() error {
 	wssUrl := ""
 	attemptsLeft := bot.maxConnectAttempts
 	for {
@@ -172,10 +208,10 @@ func (bot *Bot) AttemptToConnect() error {
 	return nil
 }
 
-// PrepareWorkspace retrieves all public channels
+// prepareWorkspace retrieves all public channels
 // for the workspace and tries to join them one
 // at a time.
-func (bot *Bot) PrepareWorkspace() error {
+func (bot *Bot) prepareWorkspace() error {
 	channels, err := bot.httpClient.PublicChannels()
 	if err != nil {
 		return err
@@ -205,10 +241,10 @@ func (bot *Bot) PrepareWorkspace() error {
 	return nil
 }
 
-// Start creates an event handler and begins
+// executeMainSequence creates an event handler and begins
 // concurrent listening and processing of
 // Slack events.
-func (bot *Bot) Start() (bool, error) {
+func (bot *Bot) executeMainSequence() (bool, error) {
 	var err error
 	bot.logger.Debug("creating events handler")
 	bot.handler, err = events.NewHandler(
