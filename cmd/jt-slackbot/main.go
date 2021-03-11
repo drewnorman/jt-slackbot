@@ -55,10 +55,5 @@ func main() {
 	}
 	logger.Info("stopped bot")
 
-	err = logger.Sync()
-	if err != nil {
-		log.Fatalf("failed to flush logs: %s", err)
-	}
-
 	os.Exit(0)
 }
