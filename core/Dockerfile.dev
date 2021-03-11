@@ -1,0 +1,10 @@
+FROM golang:alpine
+
+WORKDIR /app
+COPY ./ /app
+
+RUN go mod download
+
+RUN go install ./cmd/jt-slackbot-core
+
+ENTRYPOINT ["/go/bin/jt-slackbot-core"]

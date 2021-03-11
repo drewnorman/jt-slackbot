@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/drewnorman/jt-slackbot/internal/slack"
+	"github.com/drewnorman/jt-slackbot/core/internal/slack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"io/ioutil"

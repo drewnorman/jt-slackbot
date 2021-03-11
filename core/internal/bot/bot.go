@@ -3,11 +3,12 @@ package bot
 import (
 	"errors"
 	"fmt"
-	"github.com/drewnorman/jt-slackbot/internal/events"
-	"github.com/drewnorman/jt-slackbot/internal/slack"
+	"github.com/drewnorman/jt-slackbot/core/internal/events"
+	"github.com/drewnorman/jt-slackbot/core/internal/slack"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -37,6 +38,16 @@ type Parameters struct {
 	DebugWssReconnects bool
 }
 
+// defaultMaxConnectAttempts determines the
+// number of times to retry any stage of the
+// Slack WebSocket connection process
+const defaultMaxConnectAttempts = 3
+
+// defaultEventProcessingTimeout defines the
+// duration of time to wait for event processing
+// to complete before stopping the bot entirely
+const defaultEventProcessingTimeout = 3 * time.Second
+
 // New returns a new instance of Bot according
 // to the given parameters.
 func New(params *Parameters) (*Bot, error) {
@@ -53,7 +64,7 @@ func New(params *Parameters) (*Bot, error) {
 		return nil, errors.New("missing bot token")
 	}
 
-	maxConnectAttempts := 3
+	maxConnectAttempts := defaultMaxConnectAttempts
 	debugWssReconnects := false
 	if params.MaxConnectAttempts != maxConnectAttempts {
 		maxConnectAttempts = params.MaxConnectAttempts
@@ -85,7 +96,11 @@ func New(params *Parameters) (*Bot, error) {
 	bot.httpClient = httpClient
 
 	bot.interrupt = make(chan os.Signal, 1)
-	signal.Notify(bot.interrupt, os.Interrupt)
+	signal.Notify(
+		bot.interrupt,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+	)
 
 	return bot, nil
 }
@@ -106,7 +121,7 @@ func (bot *Bot) Run() error {
 		bot.logger.Info("prepared workspace")
 
 		bot.logger.Info("connecting to slack")
-		err := bot.attemptToConnect()
+		err = bot.attemptToConnect()
 		if err != nil {
 			return err
 		}
@@ -276,7 +291,10 @@ func (bot *Bot) executeMainSequence() (bool, error) {
 	}
 
 	bot.logger.Debug("closing ws client")
-	_, err = bot.wsClient.Close(processingComplete, 1*time.Second)
+	_, err = bot.wsClient.Close(
+		processingComplete,
+		defaultEventProcessingTimeout,
+	)
 	if err != nil {
 		return false, err
 	}

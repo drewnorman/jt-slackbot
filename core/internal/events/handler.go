@@ -3,7 +3,7 @@ package events
 import (
 	"container/list"
 	"errors"
-	"github.com/drewnorman/jt-slackbot/internal/slack"
+	"github.com/drewnorman/jt-slackbot/core/internal/slack"
 	"go.uber.org/zap"
 )
 

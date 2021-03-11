@@ -1,24 +1,21 @@
 version: "3.7"
 
 services:
-  jt-slackbot:
+  jt-slackbot-core:
     build:
-      context: .
+      context: ./core
       dockerfile: Dockerfile.dev
-    container_name: jt-slackbot
+    container_name: jt-slackbot-core
     volumes:
-      - .:/app
-      - ./logs:/var/log/jt-slackbot
+      - ./core/logs:/var/log/jt-slackbot-core
     restart: always
     networks:
       - internal
-  jt-slackbot-test:
+  jt-slackbot-core-test:
     build:
-      context: .
+      context: ./core
       dockerfile: Dockerfile.test
-    container_name: jt-slackbot-test
-    volumes:
-      - .:/app
+    container_name: jt-slackbot-core-test
     networks:
       - internal
 networks:

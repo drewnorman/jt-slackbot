@@ -1,4 +1,4 @@
-module github.com/drewnorman/jt-slackbot
+module github.com/drewnorman/jt-slackbot/core
 
 go 1.15
 

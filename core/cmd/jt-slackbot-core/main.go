@@ -1,13 +1,23 @@
 package main
 
 import (
-	"github.com/drewnorman/jt-slackbot/internal/bot"
-	"github.com/drewnorman/jt-slackbot/internal/configuration"
-	"github.com/drewnorman/jt-slackbot/internal/logging"
+	"github.com/drewnorman/jt-slackbot/core/internal/bot"
+	"github.com/drewnorman/jt-slackbot/core/internal/configuration"
+	"github.com/drewnorman/jt-slackbot/core/internal/logging"
 	"go.uber.org/zap"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"log"
 	"os"
+)
+
+// maxLogFileSizeInMb, maxLogBackups, and
+// maxLogAgeInDays determine the settings
+// for log file management
+const (
+	maxLogFileSizeInMb = 10
+	maxLogBackups      = 3
+	maxLogAgeInDays    = 28
 )
 
 // main loads a configuration from which it creates
@@ -23,7 +33,12 @@ func main() {
 		logging.LoggerParameters{
 			Level: config.LogLevel,
 			Writers: []io.Writer{
-				os.Stdout,
+				&lumberjack.Logger{
+					Filename:   "/var/log/jt-slackbot-core/main.log",
+					MaxSize:    maxLogFileSizeInMb,
+					MaxBackups: maxLogBackups,
+					MaxAge:     maxLogAgeInDays,
+				},
 			},
 		},
 	)

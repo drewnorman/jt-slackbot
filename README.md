@@ -1,4 +1,4 @@
-<h1 align="center">J.T. Slackbot</h1>
+<h1 align="center">J.T. SlackBot</h1>
 
 <div align="center">
   A small Go app that integrates with <a href="https://slack.com/">Slack</a> to power a virtual J.T. to hang out in your workspace.
@@ -21,11 +21,10 @@
 
 
 ### Features
-- __Intelligent Responses:__ Mention the good boy himself in a message with `@J.T.` and he will try to respond appropriately. No guarantees. After all, he is only a pup.
-- __Real-Time Interactions:__ With a real-time connection to Slack via <a href="https://api.slack.com/apis/connections/socket">Socket Mode</a>, it's like J.T. is really talking to you! Omg!
-- __Public Channel Infiltration:__ On start up, J.T. Slackbot will try to join all of your public channels. He really just wants some company.
+- __Intelligent Responses:__ Mention the good boy himself in a message with `@J.T.` and he will try to respond appropriately. No guarantees! After all, he is only a pup.
+- __Real-Time Interactions:__ With a real-time connection to Slack via <a href="https://api.slack.com/apis/connections/socket">Socket Mode</a>, it's like J.T. is really talking to you! OMG!
+- __Public Channel Infiltration:__ On start-up, J.T. SlackBot will try to join all of your public channels. He really just wants some company....
 - __Automatic Connection Renewal:__ J.T. is infinite! J.T. is eternal!
-
 
 ### Installation
 
@@ -33,18 +32,18 @@ Clone the project:
 
     git clone https://github.com/drewnorman/jt-slackbot.git
 
-From the project root, create a copy of the configuration template:
+In the `core` directory under the project root, create a copy of the configuration template:
 
     cp .env.template .env
 
 Then replace the values for `SLACK_APP_TOKEN` and `SLACK_BOT_TOKEN` with your corresponding Slack application tokens.
 
-
 ### Usage
 Start the application.
 
-    go run .
+    docker-compose up -d jt-slackbot-core
 
-Or with Docker Compose:
+This will start the core service in the background. Logs will be written to the `logs` directory of the project root.
 
-    docker-compose up -d
+### License
+J.T. SlackBot is licensed under the <a href="https://opensource.org/licenses/MIT">MIT license</a>.
