@@ -98,19 +98,19 @@ func (bot *Bot) Run() error {
 	restart := true
 	var err error
 	for restart {
-		bot.logger.Info("connecting to slack")
-		err := bot.attemptToConnect()
-		if err != nil {
-			return err
-		}
-		bot.logger.Info("connected to slack")
-
 		bot.logger.Info("preparing workspace")
 		err = bot.prepareWorkspace()
 		if err != nil {
 			return err
 		}
 		bot.logger.Info("prepared workspace")
+
+		bot.logger.Info("connecting to slack")
+		err := bot.attemptToConnect()
+		if err != nil {
+			return err
+		}
+		bot.logger.Info("connected to slack")
 
 		bot.logger.Info("executing main sequence")
 		restart, err = bot.executeMainSequence()
@@ -259,31 +259,24 @@ func (bot *Bot) executeMainSequence() (bool, error) {
 	bot.logger.Debug("created events handler")
 
 	eventsStream := make(chan map[string]interface{})
-	complete := make(chan struct{})
+	processingComplete := make(chan struct{})
 
 	bot.logger.Debug("starting event listening and handling")
 	go bot.wsClient.Listen(eventsStream)
-	go bot.handler.Process(eventsStream, complete)
+	go bot.handler.Process(eventsStream, processingComplete)
 	bot.logger.Debug("started event listening and handling")
 
 	restart := true
-	for {
-		select {
-		case <-complete:
-			bot.logger.Info("processing completed")
-			break
-		case <-bot.interrupt:
-			bot.logger.Info("received interrupt signal")
-			restart = false
-			break
-		default:
-			continue
-		}
-		break
+	select {
+	case <-bot.interrupt:
+		bot.logger.Info("received interrupt signal")
+		restart = false
+	case <-processingComplete:
+		bot.logger.Info("event handling completed")
 	}
 
 	bot.logger.Debug("closing ws client")
-	_, err = bot.wsClient.Close(complete, 1*time.Second)
+	_, err = bot.wsClient.Close(processingComplete, 1*time.Second)
 	if err != nil {
 		return false, err
 	}

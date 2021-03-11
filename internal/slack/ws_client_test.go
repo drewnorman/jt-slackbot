@@ -230,7 +230,6 @@ func TestClient_Listen(t *testing.T) {
 						"payload":     map[string]interface{}{},
 					},
 				},
-				invalidResponse: false,
 				closeAfterWrite: false,
 			},
 		},
@@ -244,7 +243,7 @@ func TestClient_Listen(t *testing.T) {
 			},
 		},
 		{
-			name: "MissingType",
+			name: "MessageTypeUnrecognized",
 			args: args{
 				events: make(chan map[string]interface{}),
 				fakeEvents: []map[string]interface{}{
@@ -253,7 +252,18 @@ func TestClient_Listen(t *testing.T) {
 						"payload":     map[string]interface{}{},
 					},
 				},
-				invalidResponse: false,
+				closeAfterWrite: true,
+			},
+		},
+		{
+			name: "MessageTypeHello",
+			args: args{
+				events: make(chan map[string]interface{}),
+				fakeEvents: []map[string]interface{}{
+					{
+						"type": "hello",
+					},
+				},
 				closeAfterWrite: true,
 			},
 		},
@@ -267,7 +277,6 @@ func TestClient_Listen(t *testing.T) {
 						"payload": map[string]interface{}{},
 					},
 				},
-				invalidResponse: false,
 				closeAfterWrite: true,
 			},
 		},
@@ -281,7 +290,6 @@ func TestClient_Listen(t *testing.T) {
 						"envelope_id": gofakeit.UUID(),
 					},
 				},
-				invalidResponse: false,
 				closeAfterWrite: true,
 			},
 		},
