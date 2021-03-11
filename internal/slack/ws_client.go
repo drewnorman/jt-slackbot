@@ -119,6 +119,15 @@ func (client *WsClient) Listen(
 		} else {
 			switch messageType {
 			case "events_api":
+			case "hello":
+				client.logger.Info("received greeting from slack")
+				continue
+			default:
+				client.logger.Warn(
+					"unrecognized message type",
+					zap.String("messageType", messageType),
+				)
+				continue
 			}
 		}
 		client.logger.Debug("received message of type event")
