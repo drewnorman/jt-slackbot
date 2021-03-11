@@ -98,19 +98,19 @@ func (bot *Bot) Run() error {
 	restart := true
 	var err error
 	for restart {
-		bot.logger.Info("connecting to slack")
-		err := bot.attemptToConnect()
-		if err != nil {
-			return err
-		}
-		bot.logger.Info("connected to slack")
-
 		bot.logger.Info("preparing workspace")
 		err = bot.prepareWorkspace()
 		if err != nil {
 			return err
 		}
 		bot.logger.Info("prepared workspace")
+
+		bot.logger.Info("connecting to slack")
+		err := bot.attemptToConnect()
+		if err != nil {
+			return err
+		}
+		bot.logger.Info("connected to slack")
 
 		bot.logger.Info("executing main sequence")
 		restart, err = bot.executeMainSequence()
