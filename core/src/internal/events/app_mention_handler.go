@@ -1,11 +1,13 @@
 package events
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/drewnorman/jt-slackbot/core/internal/slack"
-	"github.com/jdkato/prose/v2"
 	"go.uber.org/zap"
+	"net/http"
 	"strings"
 )
 
@@ -59,23 +61,41 @@ func (handler *AppMentionHandler) Process(
 		return err
 	}
 
-	doc, err := prose.NewDocument(
-		event.text,
-		prose.WithExtraction(false),
-		prose.WithSegmentation(false),
+	jsonData, err := json.Marshal(
+		map[string]string{
+			"message": event.text,
+		},
 	)
 	if err != nil {
 		return err
 	}
 
-	for _, tok := range doc.Tokens() {
-		err = handler.slackHttpClient.SendMessageToChannel(
-			tok.Text,
-			event.channelId,
-		)
-		if err != nil {
-			return err
-		}
+	resp, err := http.Post(
+		"http://localhost:5000/converse",
+		"application/json",
+		bytes.NewBuffer(jsonData),
+	)
+	if err != nil {
+		return err
+	}
+
+	decoded := make(map[string]interface{})
+	err = json.NewDecoder(resp.Body).Decode(&decoded)
+	if err != nil {
+		return err
+	}
+
+	reply, ok := decoded["reply"].(string)
+	if !ok {
+		return errors.New("failed to find reply in response")
+	}
+
+	err = handler.slackHttpClient.SendMessageToChannel(
+		reply,
+		event.channelId,
+	)
+	if err != nil {
+		return err
 	}
 
 	return nil
