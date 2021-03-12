@@ -1,0 +1,30 @@
+steps:
+  # Build and test the core container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-core-$TAG_NAME',
+      '-t', '$COMMIT_SHA',
+      '-f', './core/Dockerfile',
+      './core'
+    ]
+  # Push the core container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/$REPO_NAME-core-$TAG_NAME']
+
+  # Build the dialog container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+        'build',
+        '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-dialog-$TAG_NAME',
+        '-t', '$COMMIT_SHA',
+        '-f', './dialog/Dockerfile',
+        './dialog'
+    ]
+  # Push the dialog container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'push', 'gcr.io/$PROJECT_ID/$REPO_NAME-dialog-$TAG_NAME' ]
+
+images:
+  - gcr.io/$PROJECT_ID/$REPO_NAME-core-$TAG_NAME
+  - gcr.io/$PROJECT_ID/$REPO_NAME-dialog-$TAG_NAME
