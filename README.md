@@ -7,9 +7,9 @@
 <br />
 
 <div align="center">
-  <img src="https://img.shields.io/github/go-mod/go-version/drewnorman/jt-slackbot" />
+  <img src="https://img.shields.io/badge/Go-v1.15-blue" />
   <img src="https://img.shields.io/badge/Python-v3.8-orange" />
-  <a href=""></a><img src="https://img.shields.io/github/license/drewnorman/jt-slackbot" />
+  <img src="https://img.shields.io/github/license/drewnorman/jt-slackbot" />
 </div>
 
 <br />
