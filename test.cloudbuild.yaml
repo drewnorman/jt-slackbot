@@ -5,6 +5,6 @@ steps:
       'build',
       '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$_HEAD_BRANCH',
       '-t', '$COMMIT_SHA',
-      '-f', './Dockerfile.test',
+      '-f', './core/Dockerfile.test',
       '.'
     ]
