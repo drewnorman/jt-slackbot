@@ -8,16 +8,22 @@ services:
     container_name: jt-slackbot-core
     volumes:
       - ./core/logs:/var/log/jt-slackbot-core
-    restart: always
-    networks:
-      - internal
+    network_mode: host
+
   jt-slackbot-core-test:
     build:
       context: ./core
       dockerfile: Dockerfile.test
     container_name: jt-slackbot-core-test
-    networks:
-      - internal
-networks:
-  internal:
-    external: false
+    network_mode: host
+
+  jt-slackbot-dialog:
+    build:
+      context: ./dialog
+      dockerfile: Dockerfile.dev
+    container_name: jt-slackbot-dialog
+    volumes:
+    - ./dialog/data:/app/data
+    ports:
+    - "5000:5000"
+    network_mode: host
