@@ -1,0 +1,16 @@
+bin
+build
+dist
+venv
+data
+.env
+.out
+.tox
+.coverage
+*.pyc
+*.swp
+*.egg-info
+*.egg/*
+*.eggs/*
+*.doctrees
+*.sqlite3
