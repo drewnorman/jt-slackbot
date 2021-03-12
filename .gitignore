@@ -1,11 +1,11 @@
-# IDE settings
+# IDE settingFroms
 .idea
 
 # Sensitive data
 .env
 
 # Build artifacts
-/jt-slackbot
+core/jt-slackbot-core
 
 # Metrics
 logs

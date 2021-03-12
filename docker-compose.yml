@@ -1,26 +1,24 @@
 version: "3.7"
 
 services:
-  jt-slackbot:
+  jt-slackbot-core:
     build:
-      context: .
+      context: ./core
       dockerfile: Dockerfile.dev
-    container_name: jt-slackbot
+    container_name: jt-slackbot-core
+    depends_on:
+      - jt-slackbot-dialog
     volumes:
-      - .:/app
-      - ./logs:/var/log/jt-slackbot
-    restart: always
-    networks:
-      - internal
-  jt-slackbot-test:
+      - ./core/logs:/var/log/jt-slackbot-core
+    network_mode: host
+
+  jt-slackbot-dialog:
     build:
-      context: .
-      dockerfile: Dockerfile.test
-    container_name: jt-slackbot-test
+      context: ./dialog
+      dockerfile: Dockerfile.dev
+    container_name: jt-slackbot-dialog
     volumes:
-      - .:/app
-    networks:
-      - internal
-networks:
-  internal:
-    external: false
+    - ./dialog/data:/app/data
+    ports:
+    - "5000:5000"
+    network_mode: host
