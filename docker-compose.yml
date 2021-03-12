@@ -12,13 +12,6 @@ services:
       - ./core/logs:/var/log/jt-slackbot-core
     network_mode: host
 
-  jt-slackbot-core-test:
-    build:
-      context: ./core
-      dockerfile: Dockerfile.test
-    container_name: jt-slackbot-core-test
-    network_mode: host
-
   jt-slackbot-dialog:
     build:
       context: ./dialog
