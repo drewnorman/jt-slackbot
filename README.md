@@ -1,14 +1,15 @@
 <h1 align="center">J.T. SlackBot</h1>
 
 <div align="center">
-  A small Go app that integrates with <a href="https://slack.com/">Slack</a> to power a virtual J.T. to hang out in your workspace.
+  An interactive, machine-learning application that integrates with <a href="https://slack.com/">Slack</a> to power a virtual J.T. to hang out in your workspace.
 </div>
 
 <br />
 
 <div align="center">
   <img src="https://img.shields.io/github/go-mod/go-version/drewnorman/jt-slackbot" />
-  <img src="https://img.shields.io/github/license/drewnorman/jt-slackbot" />
+  <img src="https://img.shields.io/badge/Python-v3.8-orange" />
+  <a href=""></a><img src="https://img.shields.io/github/license/drewnorman/jt-slackbot" />
 </div>
 
 <br />
@@ -39,11 +40,15 @@ In the `core` directory under the project root, create a copy of the configurati
 Then replace the values for `SLACK_APP_TOKEN` and `SLACK_BOT_TOKEN` with your corresponding Slack application tokens.
 
 ### Usage
-Start the application.
+Start the application:
 
-    docker-compose up -d jt-slackbot-core
+    docker-compose up -d
 
-This will start the core service in the background. Logs will be written to the `logs` directory of the project root.
+This will start both the core and dialog services in the background. Logs will be written to the `core/logs` directory.
+
+Stop the application:
+
+    docker-compose down
 
 ### License
 J.T. SlackBot is licensed under the <a href="https://opensource.org/licenses/MIT">MIT license</a>.
