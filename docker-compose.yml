@@ -6,6 +6,8 @@ services:
       context: ./core
       dockerfile: Dockerfile.dev
     container_name: jt-slackbot-core
+    depends_on:
+      - jt-slackbot-dialog
     volumes:
       - ./core/logs:/var/log/jt-slackbot-core
     network_mode: host
