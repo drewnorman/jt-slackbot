@@ -39,9 +39,7 @@ func NewConfiguration() *Configuration {
 // be set.
 func (config *Configuration) Load() error {
 	exists := false
-	if err := config.loadEnvironment(); err != nil {
-		return err
-	}
+	_ = config.loadEnvironment()
 
 	config.ApiUrl, exists = os.LookupEnv("SLACK_API_URL")
 	if !exists {
