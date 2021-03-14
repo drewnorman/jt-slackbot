@@ -6,6 +6,6 @@ COPY ./src /app
 
 RUN go mod download
 
-RUN go install ./cmd/jt-slackbot-core
+RUN go get github.com/githubnemo/CompileDaemon
 
-ENTRYPOINT ["/go/bin/jt-slackbot-core"]
+ENTRYPOINT CompileDaemon --build="go build ./cmd/jt-slackbot-core" --command=./jt-slackbot-core

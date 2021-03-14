@@ -9,6 +9,7 @@ services:
     depends_on:
       - jt-slackbot-dialog
     volumes:
+      - ./core/src:/app
       - ./core/logs:/var/log/jt-slackbot-core
     network_mode: host
 
