@@ -6,6 +6,13 @@
 
 # Build artifacts
 core/**/jt-slackbot-core
+dialog/venv
+dialog/**/*.egg-info
+dialog/**/*.egg/*
+dialog/**/*.eggs
+dialog/**/*.eggs/*
+dialog/**/*.sqlite3
 
 # Metrics
 logs
+
