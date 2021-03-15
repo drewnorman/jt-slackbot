@@ -10,12 +10,7 @@ english_bot = ChatBot(
     storage_adapter='chatterbot.storage.SQLStorageAdapter',
 )
 trainer = ChatterBotCorpusTrainer(english_bot)
-trainer.train('chatterbot.corpus.english')
-
-
-@server.route('/')
-def index():
-    return 'Looking to chat? Post a JSON with a \'message\' key to \'/converse\'.'
+trainer.train('chatterbot-corpus.chatterbot_corpus.data.english.ai')
 
 
 @server.route('/converse', methods=['POST'])

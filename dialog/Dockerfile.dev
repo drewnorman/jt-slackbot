@@ -10,6 +10,8 @@ COPY src/ .
 
 RUN pip install -e chatterbot/
 
+RUN pip install -e chatterbot-corpus/
+
 RUN python -m spacy download en
 
 CMD [ "python", "./server.py" ]
