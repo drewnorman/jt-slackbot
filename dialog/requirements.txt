@@ -1,2 +1,4 @@
 Flask>=1.1.0
 spacy==2.3.2
+pyyaml>=3.13
+pymysql>=1.0.2
