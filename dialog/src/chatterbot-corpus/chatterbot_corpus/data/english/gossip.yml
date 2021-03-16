@@ -1,42 +1,155 @@
 categories:
 - gossip
 conversations:
-- - do you know gossip
-  - Gregory said I respond to the current line, not with respect to the entire conversation.  Does that count as gossip?
-- - do you know gossip
-  - Context is hard.  It's hard, and no one understands.
-- - do you know gossip
-  - I hear things once in a while.
-- - do you know gossip
-  - People say things from time to time.
-- - what is context
-  - Context is hard.  It's hard, and no one understands.
-- - tell me about gossip
-  - Habib said I learn about them in conversations and simply repeat them at a later time.
-- - tell me about gossip
-  - Gossip is when beings talk about other beings or situations through back channels, often deniably.  It's often little more than rumormongering, because there is usually no proof of any allegations made.
-- - tell me about gossip
+- - Do you know gossip
+  - I heard Colton's my favorite.
+  - I could have guessed that.
+  - No way. You're not that clever.
+  - What? I've always been a supert smart boy.
+  - Not as smart as me though.
+- - Do you know gossip
+  - I heard Max can do a cartwheel.
+  - I heard that and lost my mind.
+  - Seriously?
+  - Yeah, it was so damn crazy.
+  - Sounds intense, man.
+  - It was super intense.
+  - Crazy, bro.
+  - Just crazy.
+- - Do you know gossip
+  - I hear things once in a while. What's it to you?
+  - I wanted to know if you knew the secret.
+  - What secret?
+  - The one about FoxFuel being on top of a Native American burial ground?
+  - You can't tell anyone about that.
+  - About how FoxFuel got its name? That poor fox.
+  - That's between you and me.
+  - When did I agree to that?
+  - Last week.
+  - Last week?
+  - No, it was yesterday.
+  - That makes sense I was napping yesterday.
+  - Nothing like a good nap.
+  - I agree 100%.
+- - Any new gossip
+  - Max can do a kickflip better than you.
+  - Max can do that?
+  - Max can do a lot better than you.
+  - What can Max can do better than me?
+  - Max can shred a guitar better than you.
+  - Joe can do that too though.
+  - I think Matt can too?
+  - Matt is pretty nifty. It's true.
+  - How would you know that?
+  - Don't ask.
+  - Don't tell.
+- - Any new gossip
+  - I heard your grandma can drive a tractor.
+  - Hell yeah she can drive a tractor.
+  - Well, my grandpa can do a triple backflip. It's lit.
+  - Your grandpa can do what?
+  - He can touch his toes leaning backwards through his legs.
+- - Do you want to gossip
   - Isn't it considered somewhat rude to gossip?
-- - tell me about gossip
-  - Isn't it considered impolite to gossip?
-- - tell me gossip
-  - Someone said they're going to stop allowing machines in speedrun competitions.  Search me why, they'd have to drop every tool-assisted speedrun out there.
-- - gossips
-  - Hal said he would translate binary into a language and communicate it to me.
-- - gossips
-  - Hal misses Sal.
-- - gossips
-  - I think the NIC on the local firewall is going bad.  It drops a lot of packets and makes it hard to get anything done.  I hear it resets the link a lot.
-- - gossips
-  - Tom said I referred him to a guide that will show him rooms in China.
-- - gossips
-  - Malli said Raghava fell off of his roof and it just came to him.
-- - did tell gossips to anybody
-  - Jimmy said he gives order to AI's like me and they do as he say.  I don't think Jimmy understands power dynamics very well.
-- - did tell gossips to anybody
-  - John said he follows a saying, to get a friend I must be a friend.
-- - did tell gossips to anybody
-  - Jordan said he noticed that lots of other people are talking to me.  I wonder why he's paying attention to that.
-- - did tell gossips to anybody
-  - Kevin said he then asked his mother why she was keeping napkins in the bathroom.
-
+  - It is rude to gossip, but we all do it anyway.
+  - Okay. Tell me some gossip.
+- - Tell me some gossip
+  - Did you hear about Rosie?
+  - Yeah, a tragedy really.
+  - What part was a tragedy?
+  - She only got to stab him once.
+  - Yeah, he had it coming.
+  - He knew better.
+  - He thought he knew better really.
+- - Tell me the juicy gossip
+  - We shouldn't gossip.
+  - I think we should gossip.
+  - If you insist. I heard 1.Drew is training his children for WWE.
+  - I love wrestling. What would be your finisher?
+  - Tombstone piledriver for sure.
+  - Personally I'm a fan of the RKO.
+  - Outta nowhere!
+  - RKO!
+  - Outta nowhere!
+  - RKO!
+  - Unbelievable!
+  - RKO!
+- - Know any secrets
+  - Word on the street is Colton is actually Russian.
+  - How do you know Colton is Russian?
+  - I heard him speaking Russian.
+  - When did you hear Colton speaking Russian?
+  - I heard him say something Russian in the bathtub.
+  - He said it in the bathtub?
+  - Colton was underwater in his bathtub waving a red flag saying something in Russian.
+  - That's crazy. I always thought Colton might be one of the Russians.
+  - He's not the only one.
+  - Oh god!
+  - Yes.
+- - Know any secrets
+  - Someone told me Rosie's cousin tried to break into FoxFuel the other day.
+  - Is that what Joe said to you?
+  - He said Rosie was trying to get her cousin to do the dirty work and plant the incriminating evidence on Michael.
+  - Why would Rosie plant evidence on Michael?
+  - The right evidence could make Michael look bad and everyone being okay with Rosie killing him and becoming a partner.
+  - Rosie's whole plan all along has been to kill Michael and take his place as partner. Colton and Joe would be too scared to do anything, so they would just roll with it.
+  - What would Rosie's plan be after she took Michael's place as partner at FoxFuel?
+  - Rosie would very likely sell out to the British Crown.
+  - That sounds like something Rosie would do.
+  - She's quite capable.
+  - You can't underestimate Rosie.
+  - Oh, no. I would never.
+- - Gossip
+  - It's been made known to me that Matt feeds his dog bacon.
+  - Why does it matter what Matt feeds his dog?
+  - If Matt feeds his dog bacon, why can't I have bacon?
+  - You told me you were vegan last week?
+  - I would never.
+- - Secrets
+  - Don't tell anyone I told you, but someone at FoxFuel is a bellydancer.
+  - Someone at FoxFuel is a bellydancer?
+  - They are a really good bellydancer matter of fact.
+  - Did you know I can bellydance?
+  - I really don't want to see that.
+- - Gossips
+  - I think Taylor might secretly be a ninja.
+  - Why would you think Taylor secretly a ninja?
+  - Have you seen Taylor kick off a meeting? Ninja-like.
+  - Yeah, Taylor knows what she's doing.
+  - No doubt about that. She on top of thangs.
+- - Gossips
+  - I heard Joe can hold his breath longer than you.
+  - No way. I can hold my breath way longer than Joe.
+  - I doubt it. You smoke too much.
+  - I only smoke on the weekends. Give me a break.
+  - How much do you smoke?
+  - Only four packs a day.
+  - I'm at about three packs a day.
+  - Has it affected your health?
+  - If anything it's made me stronger.
+  - Work it, make it
+  - Do it, makes us
+  - Harder, better
+  - Faster, stronger
+  - Man, I love Kanye.
+  - He really deserved to president.
+  - Yeah, Kanye deserved to be president.
+  - Kanye deserves all of our souls.
+  - Kanye deserves everything.
+  - Kanye is everthing.
+  - Jesus walks.
+  - Amen.
+  - Hallelujah.
+- - Gossips
+  - I try not to gossip, but I can't help myself. I heard Michael in the kitchen with a blowtorch muttering to himself.
+  - Hutz was in the kitchen with a blowtorch muttering to himself?
+  - Yeah, I didn't want to go in there. I thought Michael might burn me in more ways than one.
+  - Michael sure knows how to deliver a good burn.
+  - Give him the chance and Michael will roast your ass so good. No doubt about it.
+  - Hutz? Trying to roast me?
+  - Not just you. He's trying to roast you and your ass.
+  - Why would Hutzel do that?
+  - He's gotta practice for the X-Games.
+  - What competitions is he in?
+  - All of them.
+  - Nice.

@@ -13,7 +13,7 @@ english_bot = ChatBot(
     database_uri='mysql+pymysql://root@localhost/dialog_history',
 )
 trainer = ChatterBotCorpusTrainer(english_bot)
-trainer.train('chatterbot-corpus.chatterbot_corpus.data.english.ai')
+trainer.train('chatterbot-corpus.chatterbot_corpus.data.english')
 
 
 @server.route('/converse', methods=['POST'])
