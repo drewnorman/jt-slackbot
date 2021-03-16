@@ -18,8 +18,25 @@ services:
       context: ./dialog
       dockerfile: Dockerfile.dev
     container_name: jt-slackbot-dialog
+    depends_on:
+      - jt-slackbot-dialog-db
+    environment:
+      - DEBUG_SERVER=true
     volumes:
-    - ./dialog/data:/app/data
+      - ./dialog/src:/app
     ports:
-    - "5000:5000"
+      - "5000:5000"
+    network_mode: host
+
+  jt-slackbot-dialog-db:
+    image: mysql:5.7.22
+    container_name: jt-slackbot-dialog-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=dialog_history
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_ROOT_PASSWORD=
     network_mode: host
