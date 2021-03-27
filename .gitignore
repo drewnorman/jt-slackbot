@@ -8,10 +8,10 @@
 core/**/jt-slackbot-core
 dialog/venv
 dialog/**/*.egg-info
-dialog/**/*.egg/*
+dialog/**/*.egg
 dialog/**/*.eggs
-dialog/**/*.eggs/*
 dialog/**/*.sqlite3
+dialog/**/__pycache__
 
 # Metrics
 logs
