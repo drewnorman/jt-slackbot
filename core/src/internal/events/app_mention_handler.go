@@ -28,9 +28,10 @@ type AppMentionHandlerParameters struct {
 // An appMentionEvent defines the
 // attributes of an app mention event.
 type appMentionEvent struct {
-	appUserId string
-	channelId string
-	text      string
+	appUserId    string
+	channelId    string
+	senderUserId string
+	text         string
 }
 
 // NewAppMentionHandler returns a new
@@ -91,7 +92,7 @@ func (handler *AppMentionHandler) Process(
 	}
 
 	err = handler.slackHttpClient.SendMessageToChannel(
-		reply,
+		"<@"+event.senderUserId+"> "+reply,
 		event.channelId,
 	)
 	if err != nil {
@@ -117,7 +118,7 @@ func eventFromData(
 	}
 	appUserId, ok := authorization["user_id"].(string)
 	if !ok {
-		return nil, fmt.Errorf("failed to determine user id from data %v", data)
+		return nil, fmt.Errorf("failed to determine app user id from data %v", data)
 	}
 	eventData, ok := data["event"].(map[string]interface{})
 	if !ok {
@@ -127,6 +128,10 @@ func eventFromData(
 	if !ok {
 		return nil, fmt.Errorf("failed to determine channel from event data %v", eventData)
 	}
+	senderUserId, ok := eventData["user"].(string)
+	if !ok {
+		return nil, fmt.Errorf("failed to determine sender user id from event data %v", eventData)
+	}
 	text, ok := eventData["text"].(string)
 	if !ok {
 		return nil, fmt.Errorf("failed to determine text from event data %v", eventData)
@@ -135,6 +140,7 @@ func eventFromData(
 	return &appMentionEvent{
 		appUserId,
 		channelId,
+		senderUserId,
 		text,
 	}, nil
 }
